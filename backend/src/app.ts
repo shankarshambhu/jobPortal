@@ -1,4 +1,4 @@
-import express, {Request, Response} from 'express'
+import express, { Request, Response } from 'express'
 import { errorHandler } from './middlewares/error.handler';
 import authRoutes from './routes/authRoute'
 import candidateRoutes from './routes/candidateRoute'
@@ -7,6 +7,8 @@ import jobRoutes from './routes/jobRoute'
 import applicationRoutes from './routes/applicationRoute'
 import interviewRoutes from './routes/interviewRoute'
 import cors from "cors";
+import path from "path";
+
 
 
 const app = express();
@@ -17,6 +19,12 @@ app.use(express.json());
 //     origin: process.env.FRONTEND_URL
 // }))
 app.use(cors());
+
+
+// other imports like express.json(), cors, etc.
+
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+
 
 app.get("/job", (req: Request, res: Response) => {
     res.send("hello world")

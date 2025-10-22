@@ -36,6 +36,8 @@ export default function ApplicationCard({
         application.scheduledInterview || null
     );
     const user = application.user;
+    const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+
 
     const [sendingLink, setSendingLink] = useState(false);
 
@@ -128,6 +130,39 @@ export default function ApplicationCard({
                     </Typography>
                     <Typography variant="body2" sx={{ mb: 2 }}>
                         <strong>Cover Letter:</strong> {application.coverLetter}
+                    </Typography >
+                    <Typography variant="body2" sx={{ mb: 2 }}>
+                        <a
+                            href={`${backendURL}${user?.candidateProfile?.resume}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                padding: '6px 12px',
+                                color: '#1976d2',
+                                textDecoration: 'none',
+                                borderRadius: '6px',
+                                fontWeight: '500',
+                                border: '1px solid #e0e0e0',
+                                transition: 'all 0.2s ease',
+                                backgroundColor: 'white'
+                            }}
+                            onMouseEnter={(e) => {
+                                const target = e.currentTarget;
+                                target.style.backgroundColor = '#f5f5f5';
+                                target.style.borderColor = '#1976d2';
+                            }}
+                            onMouseLeave={(e) => {
+                                const target = e.currentTarget;
+                                target.style.backgroundColor = 'white';
+                                target.style.borderColor = '#e0e0e0';
+                            }}
+                        >
+                            <span>📄</span>
+                            <strong>View Resume</strong>
+                        </a>
                     </Typography>
 
                     {/* Status Section */}

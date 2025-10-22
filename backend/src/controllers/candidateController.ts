@@ -9,6 +9,35 @@ import { firstName } from "../validation/commonFields";
 import { getAllApplicationServiceCandidate } from "../services/applicationService";
 import { getInterviewByApplicationId, getInterviewByCandidateId } from "../services/interviewService";
 
+// export const createProfile = async (req: AuthRequest, res: Response, next: NextFunction) => {
+//     try {
+//         const { userId } = req.user!;
+//         const found = await getCandidateProfileById(userId);
+//         if (found) {
+//             throw new ApiError("Profile already exists", 409);
+//         }
+//         const user = await getUserById(userId);
+//         if (!user) {
+//             throw new ApiError("User not found", 404)
+//         }
+//         const profile = await candidateProfileService(req.body, user);
+//         res.status(200).json({
+//             success: true,
+//             message: "profile created successfully",
+//             profile
+//         })
+
+
+//     } catch (error) {
+//         next(error);
+
+
+//     }
+
+// }
+
+
+
 export const createProfile = async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
         const { userId } = req.user!;
@@ -16,47 +45,100 @@ export const createProfile = async (req: AuthRequest, res: Response, next: NextF
         if (found) {
             throw new ApiError("Profile already exists", 409);
         }
-        const user = await getUserById(userId);
-        if (!user) {
-            throw new ApiError("User not found", 404)
-        }
-        const profile = await candidateProfileService(req.body, user);
-        res.status(200).json({
-            success: true,
-            message: "profile created successfully",
-            profile
-        })
 
-
-    } catch (error) {
-        next(error);
-
-
-    }
-
-}
-
-export const editProfile = async (req: AuthRequest, res: Response, next: NextFunction) => {
-    try {
-        const { userId } = req.user!;
-        const { firstName, lastName, age, address, skills, experienceYears, resume, gender, date_of_birth, phone_number } = req.body;
-        const userProfile = {
-            firstName,
-            lastName
-        }
-        const candidateProfile = {
-            age, address, skills, experienceYears, resume, gender, date_of_birth, phone_number
-        }
-        const candidate = await getCandidateProfileById(userId);
         const user = await getUserById(userId);
         if (!user) {
             throw new ApiError("User not found", 404);
         }
-        if (!candidate) {
-            throw new ApiError("Proflie not made", 404);
+
+        // If a file was uploaded, overwrite resume in body
+        if (req.file) {
+            req.body.resume = `/uploads/resumes/${req.file.filename}`;
         }
-        await editUser(userProfile, user)
+
+        const profile = await candidateProfileService(req.body, user);
+
+        res.status(200).json({
+            success: true,
+            message: "Profile created successfully",
+            profile
+        });
+
+    } catch (error) {
+        next(error);
+    }
+};
+
+
+
+
+
+// export const editProfile = async (req: AuthRequest, res: Response, next: NextFunction) => {
+//     try {
+//         const { userId } = req.user!;
+//         const { firstName, lastName, age, address, skills, experienceYears, resume, gender, date_of_birth, phone_number } = req.body;
+//         const userProfile = {
+//             firstName,
+//             lastName
+//         }
+//         const candidateProfile = {
+//             age, address, skills, experienceYears, resume, gender, date_of_birth, phone_number
+//         }
+//         const candidate = await getCandidateProfileById(userId);
+//         const user = await getUserById(userId);
+//         if (!user) {
+//             throw new ApiError("User not found", 404);
+//         }
+//         if (!candidate) {
+//             throw new ApiError("Proflie not made", 404);
+//         }
+//         await editUser(userProfile, user)
+//         const updatedProfile = await editCandidateProfile(candidate, candidateProfile);
+//         res.status(200).json({
+//             success: true,
+//             message: "Profile updated successfully",
+//             profile: updatedProfile
+//         });
+
+//     } catch (error) {
+//         next(error);
+
+//     }
+
+// }
+
+
+
+export const editProfile = async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+        const { userId } = req.user!;
+        const { firstName, lastName, age, address, skills, experienceYears, gender, date_of_birth, phone_number } = req.body;
+
+        const userProfile = { firstName, lastName };
+        const candidateProfile: Partial<CandidateProfile> = {
+            age,
+            address,
+            skills,
+            experienceYears,
+            gender,
+            date_of_birth,
+            phone_number
+        };
+
+        // If a file is uploaded, save its path
+        if (req.file) {
+            candidateProfile.resume = `/uploads/resumes/${req.file.filename}`;
+        }
+
+        const candidate = await getCandidateProfileById(userId);
+        const user = await getUserById(userId);
+
+        if (!user) throw new ApiError("User not found", 404);
+        if (!candidate) throw new ApiError("Profile not made", 404);
+
+        await editUser(userProfile, user);
         const updatedProfile = await editCandidateProfile(candidate, candidateProfile);
+
         res.status(200).json({
             success: true,
             message: "Profile updated successfully",
@@ -65,10 +147,8 @@ export const editProfile = async (req: AuthRequest, res: Response, next: NextFun
 
     } catch (error) {
         next(error);
-
     }
-
-}
+};
 
 
 export const getCandidate = async (req: AuthRequest, res: Response, next: NextFunction) => {
@@ -126,7 +206,7 @@ export const getCandidateStats = async (req: AuthRequest, res: Response, next: N
         }
         const application = await getAllApplicationServiceCandidate(userId);
         const interview = await getInterviewByCandidateId(userId);
-        if (!interview ) {
+        if (!interview) {
             throw new ApiError("Interview not found", 404);
         }
         if (!application || application.length === 0) {

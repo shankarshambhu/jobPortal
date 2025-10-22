@@ -10,57 +10,18 @@ export const candidateProfileSchema = Joi.object({
         "string.min": "Last name must be at least 2 characters",
         "string.empty": "Last name cannot be empty",
     }),
-    age: Joi.number()
-        .min(18)
-        .required()
-        .messages({
-            "number.base": "Age must be a number",
-            "number.min": "Age must be at least 18",
-            "any.required": "Age is required",
-        }),
-
-    address: Joi.string().min(5).required().messages({
-        "string.base": "Address must be a string",
-        "string.min": "Address must be at least 5 characters",
-        "any.required": "Address is required",
-    }),
-
-    phone_number: Joi.string()
-        .pattern(/^[0-9]{10}$/)
-        .required()
-        .messages({
-            "string.pattern.base": "Phone number must be 10 digits",
-            "any.required": "Phone number is required",
-        }),
-
-    date_of_birth: Joi.date().required().messages({
-        "date.base": "Date of birth must be a valid date",
-        "any.required": "Date of birth is required",
-    }),
-
-    gender: Joi.string()
-        .valid(...Object.values(Gender))
-        .required()
-        .messages({
-            "any.only": `Gender must be one of [${Object.values(Gender).join(", ")}]`,
-            "any.required": "Gender is required",
-        }),
-
-    experienceYears: Joi.number()
-        .min(0)
-        .required()
-        .messages({
-            "number.base": "Experience years must be a number",
-            "number.min": "Experience years cannot be negative",
-            "any.required": "Experience years is required",
-        }),
-
-    skills: Joi.array().items(Joi.string()), // optional array of strings
-
-    resume: Joi.string().optional(),
-});
-
-
+    age: Joi.number().min(18).required(),
+    address: Joi.string().min(5).required(),
+    phone_number: Joi.string().pattern(/^[0-9]{10}$/).required(),
+    date_of_birth: Joi.date().required(),
+    gender: Joi.string().valid(...Object.values(Gender)).required(),
+    experienceYears: Joi.number().min(0).required(),
+    skills: Joi.alternatives().try(
+        Joi.array().items(Joi.string()),
+        Joi.string()
+    ),
+    resume: Joi.any()
+}).unknown(true); // ✅ allow extra fields like id, email, role
 
 
 export const companyProfileSchema = Joi.object({

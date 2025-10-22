@@ -1,5 +1,3 @@
-
-
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {
@@ -44,6 +42,16 @@ import {
 function CandidateProfilePage() {
     const { user } = useAuth();
     const theme = useTheme();
+    const [resumeFile, setResumeFile] = useState<File | null>(null);
+
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            setResumeFile(e.target.files[0]);
+            setEditData((prev: any) => ({ ...prev, resume: e.target.files![0].name }));
+            if (errors["resume"]) setErrors((prev) => ({ ...prev, resume: "" }));
+        }
+    };
 
     const [profile, setProfile] = useState<any>(null);
     const [editData, setEditData] = useState<any>({});
@@ -60,7 +68,7 @@ function CandidateProfilePage() {
             }
         } catch (error: any) {
             console.log(error);
-            
+
             toast.error(error?.data?.message || "Failed to fetch profile");
         }
     };
@@ -68,6 +76,8 @@ function CandidateProfilePage() {
     useEffect(() => {
         fetchProfile();
     }, [user]);
+    const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+
 
     const handleEditChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -121,42 +131,43 @@ function CandidateProfilePage() {
     const handleSave = async () => {
         if (!validateForm(editData)) return;
 
-        const allowedFields = [
-            "firstName",
-            "lastName",
-            "age",
-            "address",
-            "phone_number",
-            "date_of_birth",
-            "gender",
-            "experienceYears",
-            "skills",
-            "resume",
-        ];
-
-        const payload = Object.fromEntries(
-            Object.entries(editData).filter(([key]) => allowedFields.includes(key))
-        );
-
         try {
-            if (profile) {
-                const res = await updateCandidateProfile(payload);
-                if (res.data.success) {
-                    toast.success("Profile updated successfully!");
+            const formData = new FormData();
+
+            Object.entries(editData).forEach(([key, value]) => {
+                if (key === "resume") return; // handle resume separately
+
+                // Handle skills array properly
+                if (key === "skills" && Array.isArray(value)) {
+                    value.forEach(skill => formData.append("skills[]", skill));
+                } else if (value !== undefined && value !== null) {
+                    formData.append(key, value.toString());
                 }
-            } else {
-                const res = await createCandidateProfile(payload);
-                if (res.data.success) {
-                    toast.success("Profile created successfully!");
-                }
+            });
+
+            if (resumeFile) {
+                formData.append("resume", resumeFile);
             }
-            fetchProfile();
-            setOpenModal(false);
+
+            let res;
+            if (profile) {
+                res = await updateCandidateProfile(formData);
+            } else {
+                res = await createCandidateProfile(formData);
+            }
+
+            if (res.data.success) {
+                toast.success(profile ? "Profile updated successfully!" : "Profile created successfully!");
+                fetchProfile();
+                setOpenModal(false);
+                setResumeFile(null);
+            }
         } catch (error: any) {
             console.error(error);
             toast.error(error?.data?.message || "Operation failed!");
         }
     };
+
 
     const formContent = (
         <Grid container spacing={3}>
@@ -274,7 +285,7 @@ function CandidateProfilePage() {
                 />
             </Grid>
 
-            <Grid size={{ xs: 12, sm: 6 }}>
+            {/* <Grid size={{ xs: 12, sm: 6 }}>
                 <TextField
                     label="Resume URL"
                     name="resume"
@@ -283,6 +294,82 @@ function CandidateProfilePage() {
                     fullWidth
                     variant="outlined"
                 />
+            </Grid> */}
+
+
+            {/* <Grid size={{ xs: 12 }}>
+                <Typography variant="subtitle2" gutterBottom>Upload Resume (PDF)</Typography>
+                <input
+                    type="file"
+                    accept=".pdf"
+                    onChange={handleFileChange}
+                    style={{ display: "block", marginBottom: 8 }}
+                />
+                {editData.resume && (
+                    <Typography variant="body2" color="text.secondary">
+                        Selected File: {editData.resume}
+                    </Typography>
+                )}
+                {errors.resume && <Typography variant="caption" color="error">{errors.resume}</Typography>}
+            </Grid> */}
+
+
+            <Grid size={{ xs: 12 }}>
+                <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600 }}>
+                    Upload Resume (PDF)
+                </Typography>
+
+                <label
+                    htmlFor="resume-upload"
+                    style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        padding: '10px 20px',
+                        backgroundColor: '#1976d2',
+                        color: 'white',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                        marginBottom: '8px',
+                        fontWeight: 500
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#1565c0';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = '#1976d2';
+                    }}
+                >
+                    <span>📤</span>
+                    Choose File
+                    <input
+                        id="resume-upload"
+                        type="file"
+                        accept=".pdf"
+                        onChange={handleFileChange}
+                        style={{ display: 'none' }}
+                    />
+                </label>
+
+                {editData.resume && (
+                    <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ mt: 1, fontStyle: 'italic' }}
+                    >
+                        Selected: {editData.resume}
+                    </Typography>
+                )}
+                {errors.resume && (
+                    <Typography
+                        variant="caption"
+                        color="error"
+                        sx={{ display: 'block', mt: 1 }}
+                    >
+                        {errors.resume}
+                    </Typography>
+                )}
             </Grid>
 
             <Grid size={{ xs: 12 }}>
@@ -491,108 +578,112 @@ function CandidateProfilePage() {
                     </Grid>
 
                     <Grid size={{ xs: 12, md: 6 }} >
-                    <Card sx={{
-                        borderRadius: 3,
-                        boxShadow: '0 4px 20px 0 rgba(0,0,0,0.08)',
-                        border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-                        background: '1F2937',
-                        height: '100%'
-                    }}>
-                        <CardContent sx={{ p: 3 }}>
-                            <Typography variant="h6" fontWeight="bold" gutterBottom sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 1,
-                                color: theme.palette.primary.main
-                            }}>
-                                <WorkHistory />
-                                Professional Information
-                            </Typography>
-                            <Divider sx={{ my: 2 }} />
+                        <Card sx={{
+                            borderRadius: 3,
+                            boxShadow: '0 4px 20px 0 rgba(0,0,0,0.08)',
+                            border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+                            background: '1F2937',
+                            height: '100%'
+                        }}>
+                            <CardContent sx={{ p: 3 }}>
+                                <Typography variant="h6" fontWeight="bold" gutterBottom sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 1,
+                                    color: theme.palette.primary.main
+                                }}>
+                                    <WorkHistory />
+                                    Professional Information
+                                </Typography>
+                                <Divider sx={{ my: 2 }} />
 
-                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                    <WorkHistory color="action" />
-                                    <Box>
-                                        <Typography variant="caption" color="text.secondary">
-                                            Experience
-                                        </Typography>
-                                        <Typography variant="body1" fontWeight="medium">
-                                            {profile.experienceYears ? `${profile.experienceYears} years` : 'Not specified'}
-                                        </Typography>
-                                    </Box>
-                                </Box>
-
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                    <Code color="action" />
-                                    <Box>
-                                        <Typography variant="caption" color="text.secondary">
-                                            Skills
-                                        </Typography>
-                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 0.5 }}>
-                                            {profile.skills?.map((skill: string, index: number) => (
-                                                <Chip
-                                                    key={index}
-                                                    label={skill}
-                                                    size="small"
-                                                    variant="outlined"
-                                                    color="primary"
-                                                />
-                                            )) || <Typography variant="body2">No skills added</Typography>}
-                                        </Box>
-                                    </Box>
-                                </Box>
-
-                                {profile.resume && (
+                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                        <Description color="action" />
+                                        <WorkHistory color="action" />
                                         <Box>
                                             <Typography variant="caption" color="text.secondary">
-                                                Resume
+                                                Experience
                                             </Typography>
                                             <Typography variant="body1" fontWeight="medium">
-                                                <a href={profile.resume} target="_blank" rel="noopener noreferrer"
-                                                    style={{ color: theme.palette.primary.main, textDecoration: 'none' }}>
-                                                    View Resume
-                                                </a>
+                                                {profile.experienceYears ? `${profile.experienceYears} years` : 'Not specified'}
                                             </Typography>
                                         </Box>
                                     </Box>
-                                )}
-                            </Box>
-                        </CardContent>
-                    </Card>
-                </Grid>
-                </Grid>
-    )
-}
 
-{/* Profile Modal */ }
-<GenericModal
-    open={openModal}
-    onClose={() => setOpenModal(false)}
-    title={profile ? "Edit Profile" : "Create Profile"}
-    actions={
-        <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
-            <CustomButton
-                label="Cancel"
-                color="secondary"
-                variant="outlined"
-                onClick={() => setOpenModal(false)}
-            />
-            <CustomButton
-                label="Save Profile"
-                color="primary"
-                onClick={handleSave}
-                sx={{
-                    background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
-                }}
-            />
-        </Box>
-    }
->
-    {formContent}
-</GenericModal>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                        <Code color="action" />
+                                        <Box>
+                                            <Typography variant="caption" color="text.secondary">
+                                                Skills
+                                            </Typography>
+                                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 0.5 }}>
+                                                {profile.skills?.map((skill: string, index: number) => (
+                                                    <Chip
+                                                        key={index}
+                                                        label={skill}
+                                                        size="small"
+                                                        variant="outlined"
+                                                        color="primary"
+                                                    />
+                                                )) || <Typography variant="body2">No skills added</Typography>}
+                                            </Box>
+                                        </Box>
+                                    </Box>
+
+                                    {profile.resume && (
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                            <Description color="action" />
+                                            <Box>
+                                                <Typography variant="caption" color="text.secondary">
+                                                    Resume
+                                                </Typography>
+                                                <Typography variant="body1" fontWeight="medium">
+                                                    <a
+                                                        href={`${backendURL}${profile.resume}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        style={{ color: theme.palette.primary.main, textDecoration: 'none' }}
+                                                    >
+                                                        View Resume
+                                                    </a>
+                                                </Typography>
+                                            </Box>
+                                        </Box>
+                                    )}
+                                </Box>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                </Grid>
+            )
+            }
+
+            {/* Profile Modal */}
+            <GenericModal
+                open={openModal}
+                onClose={() => setOpenModal(false)}
+                title={profile ? "Edit Profile" : "Create Profile"}
+                actions={
+                    <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
+                        <CustomButton
+                            label="Cancel"
+                            color="secondary"
+                            variant="outlined"
+                            onClick={() => setOpenModal(false)}
+                        />
+                        <CustomButton
+                            label="Save Profile"
+                            color="primary"
+                            onClick={handleSave}
+                            sx={{
+                                background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
+                            }}
+                        />
+                    </Box>
+                }
+            >
+                {formContent}
+            </GenericModal>
         </Box >
     );
 }
