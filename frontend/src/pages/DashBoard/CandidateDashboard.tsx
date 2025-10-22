@@ -122,7 +122,7 @@ const CandidateDashboard = () => {
   };
 
   const offersReceived =
-    stats?.application.filter((app) => app.status === "hired").length || 0;
+    stats?.application.filter((app) => app.status === "hired")?.length || 0;
 
   // ------------------- Chart Data -------------------
   const lineData = {
@@ -291,13 +291,13 @@ const CandidateDashboard = () => {
         {[
           {
             label: "Total Applications",
-            value: stats?.application.length || 0,
+            value: stats?.application?.length || 0,
             icon: <WorkOutline sx={{ fontSize: 32 }} />,
             color: "#3b82f6"
           },
           {
             label: "Interviews Scheduled",
-            value: stats?.interview.length || 0,
+            value: stats?.interview?.length || 0,
             icon: <Schedule sx={{ fontSize: 32 }} />,
             color: "#8b5cf6"
           },
@@ -309,7 +309,7 @@ const CandidateDashboard = () => {
           },
           {
             label: "Application Trend",
-            value: trends.length > 0 ? `${trends[trends.length - 1]?.count || 0} this month` : "0",
+            value: trends?.length > 0 ? `${trends[trends?.length - 1]?.count || 0} this month` : "0",
             icon: <TrendingUp sx={{ fontSize: 32 }} />,
             color: "#f59e0b"
           },
@@ -445,7 +445,7 @@ const CandidateDashboard = () => {
                 </Typography>
               </Box>
 
-              {interviews.length > 0 ? (
+              {interviews?.length > 0 ? (
                 <List sx={{ p: 0 }}>
                   {interviews.map((interview, index) => (
                     <Box key={interview.id}>
@@ -480,7 +480,7 @@ const CandidateDashboard = () => {
                           </Typography>
                         </Box>
                       </ListItem>
-                      {index < interviews.length - 1 && (
+                      {index < interviews?.length - 1 && (
                         <Divider sx={{ my: 1 }} />
                       )}
                     </Box>
