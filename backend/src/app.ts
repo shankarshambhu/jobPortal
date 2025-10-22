@@ -1,4 +1,4 @@
-import express from 'express'
+import express, {Request, Response} from 'express'
 import { errorHandler } from './middlewares/error.handler';
 import authRoutes from './routes/authRoute'
 import candidateRoutes from './routes/candidateRoute'
@@ -13,10 +13,14 @@ const app = express();
 
 
 app.use(express.json());
-app.use(cors({
-    origin: process.env.FRONTEND_URL
-}))
+// app.use(cors({
+//     origin: process.env.FRONTEND_URL
+// }))
+app.use(cors());
 
+app.get("/job", (req: Request, res: Response) => {
+    res.send("hello world")
+})
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/candidate", candidateRoutes);
 app.use("/api/v1/company", companyRoutes);
