@@ -1,120 +1,4 @@
-// import { useState } from "react";
-// import {
-//     AppBar,
-//     Toolbar,
-//     Typography,
-//     IconButton,
-//     Avatar,
-//     Menu,
-//     MenuItem,
-//     Divider,
-//     Box
-// } from "@mui/material";
-// import { useNavigate } from "react-router-dom";
-// import { Logout, Notifications as Bell, AccountCircle } from "@mui/icons-material";
-// import { useAuth } from "../context/AuthContext";
-// import { useTheme } from "@mui/material/styles";
-
-// function Navbar() {
-//     const theme = useTheme();
-//     const navigate = useNavigate();
-//     const { user, logout } = useAuth();
-//     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-//     const open = Boolean(anchorEl);
-
-//     if (!user) return null;
-
-//     const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
-//         setAnchorEl(event.currentTarget);
-//     };
-
-//     const handleClose = () => setAnchorEl(null);
-
-//     const handleLogout = () => {
-//         handleClose();
-//         logout();
-//         navigate("/login");
-//     };
-
-//     return (
-//         <AppBar
-//             position="static"
-//             sx={{
-//                 backgroundColor: theme.palette.background.paper,
-//                 color: theme.palette.text.primary,
-//                 boxShadow: theme.shadows[1],
-//                 borderBottom: `1px solid ${theme.palette.divider}`,
-//                 zIndex: 1100,
-//                 padding:"1.5px"
-//             }}
-//         >
-//             <Toolbar sx={{ justifyContent: "space-between" }}>
-//                 {/* Logo */}
-//                 <Typography
-//                     variant="h6"
-//                     fontWeight="bold"
-//                     color="primary"
-//                     sx={{ cursor: "pointer" }}
-//                 >
-//                     JobPortal
-//                 </Typography>
-
-//                 <Box display="flex" alignItems="center" gap={2}>
-//                     {/* Notification Icon */}
-//                     <IconButton>
-//                         <Bell fontSize="small" />
-//                     </IconButton>
-
-//                     {/* User Info */}
-//                     <Box display="flex" flexDirection="column" alignItems="flex-end">
-//                         <Typography variant="body2" fontWeight={500}>
-//                             {user.firstName} {user.lastName}
-//                         </Typography>
-//                         <Typography
-//                             variant="caption"
-//                             color="text.secondary"
-//                             sx={{ textTransform: "capitalize" }}
-//                         >
-//                             {user.role}
-//                         </Typography>
-//                     </Box>
-
-//                     {/* Avatar */}
-//                     <IconButton onClick={handleMenu}>
-//                         <Avatar sx={{ bgcolor: "primary.main", width: 32, height: 32 }}>
-//                             <AccountCircle />
-//                         </Avatar>
-//                     </IconButton>
-
-//                     {/* Menu */}
-//                     <Menu
-//                         open={open}
-//                         anchorEl={anchorEl}
-//                         onClose={handleClose}
-//                         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-//                         transformOrigin={{ vertical: "top", horizontal: "right" }}
-//                     >
-//                         <Divider />
-//                         <MenuItem onClick={handleLogout} sx={{ color: "#ef4444" }}>
-//                             <Logout fontSize="small" sx={{ mr: 1 }} />
-//                             Logout
-//                         </MenuItem>
-//                     </Menu>
-//                 </Box>
-//             </Toolbar>
-//         </AppBar>
-//     );
-// }
-
-// export default Navbar;
-
-
-
-
-
-
-
-import { useState } from "react";
+import React, { useState } from 'react';
 import {
     AppBar,
     Toolbar,
@@ -124,40 +8,56 @@ import {
     Menu,
     MenuItem,
     Divider,
-    Box,
     Badge,
     Chip,
     useTheme,
     alpha,
-    Fade
-} from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import { Logout, Notifications as Bell, AccountCircle, Settings } from "@mui/icons-material";
-import { useAuth } from "../context/AuthContext";
-
+    Fade,
+    Button,
+    Box,
+    Container,
+    // InputBase,
+    Drawer,
+    List,
+    ListItemIcon,
+    ListItemText,
+    ListItemButton,
+    useMediaQuery,
+} from '@mui/material';
+import {
+    Logout,
+    Notifications as Bell,
+    AccountCircle,
+    Settings,
+    // Search,
+    Menu as MenuIcon,
+    Work,
+    Dashboard,
+    // Business,
+    Article,
+    People,
+} from '@mui/icons-material';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import logo from "../assets/zenploy-high-resolution-logo.png"
 function Navbar() {
     const theme = useTheme();
     const navigate = useNavigate();
+    const location = useLocation();
     const { user, logout } = useAuth();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const [notificationAnchor, setNotificationAnchor] = useState<null | HTMLElement>(null);
+    const [mobileDrawer, setMobileDrawer] = useState(false);
     const open = Boolean(anchorEl);
-    const notificationOpen = Boolean(notificationAnchor);
+
+    // Media queries for responsive design
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+    const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
 
     if (!user) return null;
 
-    const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleNotificationMenu = (event: React.MouseEvent<HTMLElement>) => {
-        setNotificationAnchor(event.currentTarget);
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null);
-        setNotificationAnchor(null);
-    };
+    const handleMenu = (event: React.MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget);
+    const handleClose = () => setAnchorEl(null);
+    const toggleDrawer = () => setMobileDrawer(!mobileDrawer);
 
     const handleLogout = () => {
         handleClose();
@@ -167,124 +67,387 @@ function Navbar() {
 
     const handleProfile = () => {
         handleClose();
-        navigate("/profile");
+        if (user.role === 'candidate') navigate("/candidate-profile");
+        else navigate("/company-profile")
+
     };
+
+    const handleDashboard = () => {
+        if (user.role === "company") navigate("/company-dashboard");
+        else if (user.role === "candidate") navigate("/candidate-dashboard");
+        else navigate("/dashboard");
+    };
+
+    const isActiveRoute = (path: string) => location.pathname === path;
+
+    // Search functionality
+    // const handleSearch = (event: React.FormEvent) => {
+    //     event.preventDefault();
+    //     // Implement search logic
+    // };
+
+    const navigationItems = {
+        candidate: [
+            { label: 'Find Jobs', path: '/candidate/jobs', icon: <Work /> },
+            { label: 'Applications', path: '/candidate/applications', icon: <Article /> },
+            // { label: 'Companies', path: '/companies', icon: <Business /> },
+        ],
+        company: [
+            { label: 'Post Job', path: '/company/jobs', icon: <Work /> },
+            { label: 'Reschedule Requests', path: '/company/reschedule', icon: <Article /> },
+            { label: 'Todays Interview', path: '/company/todayinterview', icon: <People /> },
+        ]
+    };
+    const handleLogo = async () => {
+        if (user.role === 'company') navigate('/company-dashboard')
+        else navigate('/candidate-dashboard');
+
+    }
+
+    const currentNavItems = navigationItems[user.role as keyof typeof navigationItems] || [];
+
+    const MobileMenu = () => (
+        <Drawer
+            anchor="right"
+            open={mobileDrawer}
+            onClose={toggleDrawer}
+            sx={{
+                '& .MuiDrawer-paper': {
+                    width: 280,
+                    background: `linear-gradient(135deg, ${theme.palette.background.paper} 0%, ${alpha(theme.palette.primary.main, 0.05)} 100%)`,
+                    backdropFilter: 'blur(20px)',
+                },
+            }}
+        >
+            <Box sx={{ p: 2 }}>
+                {/* User Info */}
+                <Box display="flex" alignItems="center" gap={2} mb={3} p={2}>
+                    <Avatar
+                        sx={{
+                            bgcolor: theme.palette.primary.main,
+                            width: 48,
+                            height: 48,
+                            border: `2px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+                        }}
+                    >
+                        <AccountCircle />
+                    </Avatar>
+                    <Box>
+                        <Typography variant="subtitle1" fontWeight={600}>
+                            {user.firstName} {user.lastName}
+                        </Typography>
+                        <Chip
+                            label={user.role}
+                            size="small"
+                            variant="filled"
+                            sx={{
+                                textTransform: "capitalize",
+                                backgroundColor: alpha(theme.palette.primary.main, 0.1),
+                                color: theme.palette.primary.main,
+                                fontWeight: 500,
+                                fontSize: '0.7rem',
+                                height: 20
+                            }}
+                        />
+                    </Box>
+                </Box>
+
+                <Divider sx={{ mb: 2 }} />
+
+                {/* Navigation Links */}
+                <List>
+                    <ListItemButton
+                        onClick={handleDashboard}
+                        sx={{
+                            borderRadius: 2,
+                            mb: 1,
+                            backgroundColor: isActiveRoute('/dashboard') ? alpha(theme.palette.primary.main, 0.1) : 'transparent',
+                        }}
+                    >
+                        <ListItemIcon>
+                            <Dashboard sx={{ color: theme.palette.primary.main }} />
+                        </ListItemIcon>
+                        <ListItemText primary="Dashboard" />
+                    </ListItemButton>
+
+                    {currentNavItems.map((item) => (
+                        <ListItemButton
+                            key={item.path}
+                            onClick={() => {
+                                navigate(item.path);
+                                toggleDrawer();
+                            }}
+                            sx={{
+                                borderRadius: 2,
+                                mb: 1,
+                                backgroundColor: isActiveRoute(item.path) ? alpha(theme.palette.primary.main, 0.1) : 'transparent',
+                            }}
+                        >
+                            <ListItemIcon>
+                                {React.cloneElement(item.icon, {
+                                    sx: { color: isActiveRoute(item.path) ? theme.palette.primary.main : theme.palette.text.secondary }
+                                })}
+                            </ListItemIcon>
+                            <ListItemText
+                                primary={item.label}
+                                primaryTypographyProps={{
+                                    color: isActiveRoute(item.path) ? theme.palette.primary.main : theme.palette.text.primary,
+                                    fontWeight: isActiveRoute(item.path) ? 600 : 400,
+                                }}
+                            />
+                        </ListItemButton>
+                    ))}
+                </List>
+
+                <Divider sx={{ my: 2 }} />
+
+                {/* User Menu Items */}
+                <List>
+                    <ListItemButton onClick={handleProfile}>
+                        <ListItemIcon>
+                            <AccountCircle sx={{ color: theme.palette.primary.main }} />
+                        </ListItemIcon>
+                        <ListItemText primary="Profile" />
+                    </ListItemButton>
+                    <ListItemButton onClick={handleClose}>
+                        <ListItemIcon>
+                            <Settings sx={{ color: theme.palette.text.secondary }} />
+                        </ListItemIcon>
+                        <ListItemText primary="Settings" />
+                    </ListItemButton>
+                    <ListItemButton
+                        onClick={handleLogout}
+                        sx={{
+                            color: theme.palette.error.main,
+                            '&:hover': {
+                                backgroundColor: alpha(theme.palette.error.main, 0.08),
+                            }
+                        }}
+                    >
+                        <ListItemIcon>
+                            <Logout sx={{ color: theme.palette.error.main }} />
+                        </ListItemIcon>
+                        <ListItemText primary="Logout" />
+                    </ListItemButton>
+                </List>
+            </Box>
+        </Drawer>
+    );
 
     return (
         <AppBar
-            position="static"
+            position="sticky"
             sx={{
-                backgroundColor: alpha(theme.palette.background.paper, 0.95),
-                backdropFilter: "blur(20px)",
+                background: `linear-gradient(135deg, ${alpha(theme.palette.background.paper, 0.98)} 0%, ${alpha(theme.palette.primary.main, 0.05)} 100%)`,
+                backdropFilter: "blur(25px)",
                 color: theme.palette.text.primary,
-                boxShadow: theme.shadows[1],
-                borderBottom: `1px solid ${theme.palette.divider}`,
-                zIndex: theme.zIndex.drawer + 1,
+                boxShadow: `0 4px 20px ${alpha(theme.palette.primary.main, 0.1)}`,
+                borderBottom: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`,
             }}
         >
-            <Toolbar sx={{ justifyContent: "space-between", py: 1 }}>
-                {/* Logo */}
-                <Fade in timeout={500}>
-                    <Typography
-                        variant="h5"
-                        fontWeight="bold"
-                        sx={{
-                            background: `linear-gradient(45deg, ${theme.palette.primary.main}, yellow)`,
-                            WebkitBackgroundClip: 'text',
-                            WebkitTextFillColor: 'transparent',
-                            cursor: 'pointer',
-                            letterSpacing: '-0.5px'
-                        }}
-                    >
-                        JobPortal
-                    </Typography>
-                </Fade>
-
-                <Box display="flex" alignItems="center" gap={3}>
-                    {/* Notification Icon with Badge */}
-                    <IconButton
-                        onClick={handleNotificationMenu}
-                        sx={{
-                            backgroundColor: alpha(theme.palette.primary.main, 0.05),
-                            '&:hover': {
-                                backgroundColor: alpha(theme.palette.primary.main, 0.1),
-                                transform: 'scale(1.05)'
-                            },
-                            transition: 'all 0.3s ease',
-                        }}
-                    >
-                        <Badge
-                            badgeContent={3}
-                            color="error"
-                            variant="dot"
-                        >
-                            <Bell
-                                fontSize="small"
-                                sx={{
-                                    color: theme.palette.primary.main
-                                }}
-                            />
-                        </Badge>
-                    </IconButton>
-
-                    {/* User Info */}
-                    <Fade in timeout={800}>
-                        <Box
-                            display="flex"
-                            alignItems="center"
-                            gap={2}
-                            sx={{
-                                px: 2,
-                                py: 1,
-                                borderRadius: 3,
-                                backgroundColor: alpha(theme.palette.primary.main, 0.03),
-                                border: `1px solid ${theme.palette.divider}`,
-                            }}
-                        >
-                            <Box display="flex" flexDirection="column" alignItems="flex-end">
-                                <Typography variant="subtitle1" fontWeight={600}>
-                                    {user.firstName} {user.lastName}
-                                </Typography>
-                                <Chip
-                                    label={user.role}
-                                    size="small"
-                                    variant="filled"
+            <Container maxWidth="xl">
+                <Toolbar sx={{ justifyContent: "space-between", py: 1, gap: 2 }}>
+                    {/* Logo Section */}
+                    {/* Logo Section */}
+                    {/* Logo Section */}
+                    <Box display="flex" alignItems="center" gap={3}>
+                        <Fade in timeout={500}>
+                            <Box
+                                display="flex"
+                                alignItems="center"
+                                gap={1.5}
+                                sx={{ cursor: "pointer" }}
+                                onClick={handleLogo}
+                            >
+                                <Box
+                                    component="img"
+                                    src={logo}
+                                    alt="Zenploy Logo"
                                     sx={{
-                                        textTransform: "capitalize",
-                                        backgroundColor: alpha(theme.palette.primary.main, 0.1),
-                                        color: theme.palette.primary.main,
-                                        fontWeight: 500,
-                                        fontSize: '0.7rem',
-                                        height: 20
+                                        height: { xs: 44, md: 60 }, // increased height for mobile & desktop
+                                        width: "auto",
+                                        borderRadius: 1.5,
+                                        objectFit: "contain",
+                                        filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.12))",
+                                        transition: "all 0.3s ease",
+                                        "&:hover": {
+                                            transform: "scale(1.05)",
+                                            filter: "drop-shadow(0 3px 6px rgba(0,0,0,0.2))",
+                                        },
                                     }}
                                 />
-                            </Box>
 
-                            {/* Avatar */}
-                            <IconButton
-                                onClick={handleMenu}
-                                sx={{
-                                    padding: 0,
-                                    '&:hover': {
-                                        transform: 'scale(1.1)'
-                                    },
-                                    transition: 'transform 0.3s ease',
-                                }}
-                            >
-                                <Avatar
+                                <Typography
+                                    variant="h5"
+                                    fontWeight="bold"
                                     sx={{
-                                        bgcolor: theme.palette.primary.main,
-                                        width: 40,
-                                        height: 40,
-                                        border: `2px solid ${alpha(theme.palette.primary.main, 0.2)}`,
-                                        boxShadow: theme.shadows[2]
+                                        background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                                        WebkitBackgroundClip: "text",
+                                        WebkitTextFillColor: "transparent",
+                                        letterSpacing: "-0.5px",
+                                        fontSize: { xs: "1.3rem", md: "1.7rem" },
+                                        lineHeight: 1.2,
                                     }}
                                 >
-                                    <AccountCircle />
-                                </Avatar>
+                                    Zenploy
+                                </Typography>
+
+                              
+                            </Box>
+                        </Fade>
+                    </Box>
+
+
+
+                    {/* Navigation & User Section */}
+                    <Box display="flex" alignItems="center" gap={1}>
+                        {/* Desktop Navigation */}
+                        {isDesktop && (
+                            <Box display="flex" gap={1}>
+                                {currentNavItems.map((item) => (
+                                    <Button
+                                        key={item.path}
+                                        color="inherit"
+                                        onClick={() => navigate(item.path)}
+                                        startIcon={item.icon}
+                                        sx={{
+                                            borderRadius: 3,
+                                            px: 2,
+                                            py: 1,
+                                            fontWeight: isActiveRoute(item.path) ? 600 : 400,
+                                            backgroundColor: isActiveRoute(item.path)
+                                                ? alpha(theme.palette.primary.main, 0.1)
+                                                : 'transparent',
+                                            color: isActiveRoute(item.path)
+                                                ? theme.palette.primary.main
+                                                : theme.palette.text.primary,
+                                            '&:hover': {
+                                                backgroundColor: alpha(theme.palette.primary.main, 0.15),
+                                                transform: 'translateY(-1px)',
+                                            },
+                                            transition: 'all 0.3s ease',
+                                        }}
+                                    >
+                                        {item.label}
+                                    </Button>
+                                ))}
+
+                                {/* Dashboard Button */}
+                                <Button
+                                    color="inherit"
+                                    onClick={handleDashboard}
+                                    startIcon={<Dashboard />}
+                                    sx={{
+                                        borderRadius: 3,
+                                        px: 2,
+                                        py: 1,
+                                        fontWeight: isActiveRoute('/dashboard') ? 600 : 400,
+                                        backgroundColor: isActiveRoute('/dashboard')
+                                            ? alpha(theme.palette.primary.main, 0.1)
+                                            : 'transparent',
+                                        color: isActiveRoute('/dashboard')
+                                            ? theme.palette.primary.main
+                                            : theme.palette.text.primary,
+                                        '&:hover': {
+                                            backgroundColor: alpha(theme.palette.primary.main, 0.15),
+                                            transform: 'translateY(-1px)',
+                                        },
+                                        transition: 'all 0.3s ease',
+                                    }}
+                                >
+                                    Dashboard
+                                </Button>
+                            </Box>
+                        )}
+
+                        {/* Notification & User Section */}
+                        <Box display="flex" alignItems="center" gap={1}>
+                            {/* Notification Icon */}
+                            <IconButton
+                                sx={{
+                                    backgroundColor: alpha(theme.palette.primary.main, 0.05),
+                                    borderRadius: 2,
+                                    '&:hover': {
+                                        backgroundColor: alpha(theme.palette.primary.main, 0.1),
+                                        transform: 'scale(1.05)',
+                                    },
+                                    transition: 'all 0.3s ease',
+                                }}
+                            >
+                                <Badge badgeContent={3} color="error" variant="dot">
+                                    <Bell sx={{ color: theme.palette.primary.main }} />
+                                </Badge>
                             </IconButton>
+
+                            {/* User Info - Desktop */}
+                            {isDesktop && (
+                                <Fade in timeout={800}>
+                                    <Box
+                                        display="flex"
+                                        alignItems="center"
+                                        gap={2}
+                                        sx={{
+                                            px: 2,
+                                            py: 1,
+                                            borderRadius: 3,
+                                            backgroundColor: alpha(theme.palette.primary.main, 0.03),
+                                            border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`,
+                                            cursor: 'pointer',
+                                            transition: 'all 0.3s ease',
+                                            '&:hover': {
+                                                backgroundColor: alpha(theme.palette.primary.main, 0.08),
+                                                transform: 'translateY(-1px)',
+                                                boxShadow: `0 4px 12px ${alpha(theme.palette.primary.main, 0.15)}`,
+                                            }
+                                        }}
+                                        onClick={handleMenu}
+                                    >
+                                        <Box display="flex" flexDirection="column" alignItems="flex-end">
+                                            <Typography variant="subtitle2" fontWeight={600}>
+                                                {user.firstName} {user.lastName}
+                                            </Typography>
+                                            <Chip
+                                                label={user.role}
+                                                size="small"
+                                                variant="filled"
+                                                sx={{
+                                                    textTransform: "capitalize",
+                                                    backgroundColor: alpha(theme.palette.primary.main, 0.1),
+                                                    color: theme.palette.primary.main,
+                                                    fontWeight: 500,
+                                                    fontSize: '0.65rem',
+                                                    height: 18
+                                                }}
+                                            />
+                                        </Box>
+                                        <Avatar
+                                            sx={{
+                                                bgcolor: theme.palette.primary.main,
+                                                width: 36,
+                                                height: 36,
+                                                border: `2px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+                                                fontSize: '1rem'
+                                            }}
+                                        >
+                                            {user.firstName?.[0]}{user.lastName?.[0]}
+                                        </Avatar>
+                                    </Box>
+                                </Fade>
+                            )}
+
+                            {/* Mobile Menu Button */}
+                            {isMobile && (
+                                <IconButton
+                                    onClick={toggleDrawer}
+                                    sx={{
+                                        color: theme.palette.primary.main,
+                                    }}
+                                >
+                                    <MenuIcon />
+                                </IconButton>
+                            )}
                         </Box>
-                    </Fade>
+                    </Box>
 
                     {/* User Menu */}
                     <Menu
@@ -295,11 +458,13 @@ function Navbar() {
                         transformOrigin={{ vertical: "top", horizontal: "right" }}
                         sx={{
                             '& .MuiPaper-root': {
-                                borderRadius: 2,
+                                borderRadius: 3,
                                 marginTop: 1,
-                                minWidth: 180,
-                                boxShadow: theme.shadows[8],
-                                border: `1px solid ${theme.palette.divider}`,
+                                minWidth: 200,
+                                boxShadow: `0 8px 32px ${alpha(theme.palette.primary.main, 0.2)}`,
+                                border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`,
+                                background: `linear-gradient(135deg, ${theme.palette.background.paper} 0%, ${alpha(theme.palette.primary.main, 0.05)} 100%)`,
+                                backdropFilter: 'blur(20px)',
                             }
                         }}
                     >
@@ -325,48 +490,11 @@ function Navbar() {
                             Logout
                         </MenuItem>
                     </Menu>
+                </Toolbar>
+            </Container>
 
-                    {/* Notifications Menu */}
-                    <Menu
-                        open={notificationOpen}
-                        anchorEl={notificationAnchor}
-                        onClose={handleClose}
-                        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                        transformOrigin={{ vertical: "top", horizontal: "right" }}
-                        sx={{
-                            '& .MuiPaper-root': {
-                                borderRadius: 2,
-                                marginTop: 1,
-                                minWidth: 320,
-                                boxShadow: theme.shadows[8],
-                                border: `1px solid ${theme.palette.divider}`,
-                            }
-                        }}
-                    >
-                        <MenuItem disabled>
-                            <Typography variant="subtitle2" color="text.secondary">
-                                Notifications (3)
-                            </Typography>
-                        </MenuItem>
-                        <Divider />
-                        <MenuItem onClick={handleClose}>
-                            <Typography variant="body2">
-                                New job application received
-                            </Typography>
-                        </MenuItem>
-                        <MenuItem onClick={handleClose}>
-                            <Typography variant="body2">
-                                Interview scheduled for tomorrow
-                            </Typography>
-                        </MenuItem>
-                        <MenuItem onClick={handleClose}>
-                            <Typography variant="body2">
-                                Profile verification completed
-                            </Typography>
-                        </MenuItem>
-                    </Menu>
-                </Box>
-            </Toolbar>
+            {/* Mobile Drawer */}
+            <MobileMenu />
         </AppBar>
     );
 }

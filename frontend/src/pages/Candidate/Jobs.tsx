@@ -126,12 +126,11 @@ export default function JobsPage() {
         }}>
             {/* Header */}
             <Box sx={{
-                background: '#1F2937',
                 p: 4,
                 borderRadius: 3,
                 boxShadow: '0 8px 32px 0 rgba(0,0,0,0.1)',
                 border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-                mb: 4
+                mb: 4   
             }}>
                 <Typography
                     variant="h3"

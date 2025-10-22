@@ -226,7 +226,7 @@ const VideoRoomPage = () => {
                     borderRadius: 3,
                     boxShadow: "0 8px 32px 0 rgba(0,0,0,0.1)",
                     border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-                    background: "#1F2937",
+                    // background: "#1F2937",
                 }}
             >
                 <CardContent sx={{ p: 3 }}>
@@ -329,7 +329,7 @@ const VideoRoomPage = () => {
                     maxWidth: 1200,
                     mb: 3,
                     borderRadius: 3,
-                    background: "#1F2937",
+                    // background: "#1F2937",
                 }}
             >
                 <CardContent sx={{ p: 3 }}>
@@ -412,7 +412,7 @@ const VideoRoomPage = () => {
                         width: "100%",
                         maxWidth: 1200,
                         borderRadius: 3,
-                        background: "#1F2937",
+                        // background: "#1F2937",
                     }}
                 >
                     <CardContent sx={{ p: 3 }}>

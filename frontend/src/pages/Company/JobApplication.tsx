@@ -1,5 +1,7 @@
+
+
 import { useEffect, useState } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import {
     Box,
     Typography,
@@ -10,9 +12,11 @@ import {
     Chip,
     Card,
     CardContent,
+    IconButton,
     alpha,
     useTheme,
 } from "@mui/material";
+import { ArrowBack } from "@mui/icons-material";
 import { toast } from "react-toastify";
 import { getApplicationsByJobId } from "../../services/application";
 import ApplicationCard from "../../components/ApplicationCard";
@@ -44,6 +48,7 @@ function StyledTab(props: any) {
 export default function JobApplication() {
     const { jobId } = useParams<{ jobId: string }>();
     const location = useLocation();
+    const navigate = useNavigate();
     const job = location.state?.job;
     const theme = useTheme();
 
@@ -85,7 +90,6 @@ export default function JobApplication() {
         );
     };
 
-    // Count applications by status
     const getStatusCount = (status: string) => {
         if (status === 'all') return applications.length;
         return applications.filter(app => app.status === status).length;
@@ -108,7 +112,17 @@ export default function JobApplication() {
             minHeight: '100vh',
             background: `linear-gradient(135deg, ${alpha(theme.palette.background.default, 0.8)} 0%, ${alpha(theme.palette.primary.light, 0.05)} 100%)`
         }}>
-            {/* Header Section */}
+            {/* Back Button + Page Title */}
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                <IconButton onClick={() => navigate(-1)} sx={{ mr: 2 }}>
+                    <ArrowBack />
+                </IconButton>
+                <Typography variant="h4" fontWeight="bold">
+                    Job Applications
+                </Typography>
+            </Box>
+
+            {/* Header Card */}
             <Card sx={{
                 mb: 4,
                 borderRadius: 3,
@@ -226,7 +240,6 @@ export default function JobApplication() {
                     justifyContent: "center",
                     alignItems: "center",
                     minHeight: 400,
-                    background: '1F2937',
                     borderRadius: 3,
                     boxShadow: '0 4px 20px 0 rgba(0,0,0,0.08)',
                 }}>
@@ -243,7 +256,6 @@ export default function JobApplication() {
                     py: 8,
                     borderRadius: 3,
                     boxShadow: '0 4px 20px 0 rgba(0,0,0,0.08)',
-                    background: '1F2937'
                 }}>
                     <CardContent>
                         <Typography variant="h6" color="text.secondary" gutterBottom>
