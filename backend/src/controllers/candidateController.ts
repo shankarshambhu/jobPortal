@@ -126,7 +126,7 @@ export const getCandidateStats = async (req: AuthRequest, res: Response, next: N
         }
         const application = await getAllApplicationServiceCandidate(userId);
         const interview = await getInterviewByCandidateId(userId);
-        if (!interview || interview.length === 0) {
+        if (!interview ) {
             throw new ApiError("Interview not found", 404);
         }
         if (!application || application.length === 0) {
