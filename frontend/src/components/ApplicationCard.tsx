@@ -36,7 +36,7 @@ export default function ApplicationCard({
         application.scheduledInterview || null
     );
     const user = application.user;
-    const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+    const backendURL = import.meta.env.VITE_BASE_URL || "http://localhost:5000";
 
 
     const [sendingLink, setSendingLink] = useState(false);

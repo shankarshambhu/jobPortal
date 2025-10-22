@@ -76,7 +76,7 @@ function CandidateProfilePage() {
     useEffect(() => {
         fetchProfile();
     }, [user]);
-    const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+    const backendURL = import.meta.env.VITE_BASE_URL || "http://localhost:5000";
 
 
     const handleEditChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
