@@ -156,10 +156,12 @@ const VideoRoomPage = () => {
                 toast.error("Failed to access camera or microphone");
             });
         const backendURL = import.meta.env.VITE_BASE_URL;
-        const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+        
+        const wsProtocol = backendURL.startsWith("https://") ? "wss://" : "ws://";
 
+        const wsHost = backendURL.replace(/^https?:\/\//, ""); // remove protocol
 
-        const ws = new WebSocket(`${protocol}://${backendURL}/video/room/${roomId}`);
+        const ws = new WebSocket(`${wsProtocol}${wsHost}/video/room/${roomId}`);
         ws.binaryType = "arraybuffer";
         wsRef.current = ws;
 
