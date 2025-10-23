@@ -243,7 +243,7 @@ export const sendInterviewNotes = async (req: AuthRequest, res: Response, next: 
     try {
         const { roomId, notes } = req.body;
         const interview = await getInterviewByRoomId(roomId);
-        if (!interview) {
+        if (!interview) {   
             throw new ApiError("Interview not found", 404);
         }
         const udpatedInterview = await sendInterviewNotesService(interview, notes);
@@ -322,7 +322,7 @@ export const checkRoomAccess = async (req: AuthRequest, res: Response, next: Nex
         const storedRoomId = interview?.roomLink?.split("/").pop();
 
         if (storedRoomId !== roomId) {
-            throw new ApiError("You don't have access to this room", 403);
+            throw new ApiError("You don't have access to this room", 404);
         }
 
         res.status(200).json({
