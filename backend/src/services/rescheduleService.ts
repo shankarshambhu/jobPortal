@@ -10,7 +10,12 @@ export const getRescheduleByUserId = async (userId: number) => {
                 candidate: true, // candidate info
                 interview: {
                     application: {
-                        job: true, // include job details
+                        job: {
+                            user: {
+                                companyProfile: true, // just include the relation
+                            }
+
+                        } // include job details
                     },
                     interviewer: true,
                 },
@@ -57,15 +62,15 @@ export const getRescheduleById = async (id: number) => {
 }
 
 
-export const updateRescheduleStatus=async (reschedule:Reschedule,status:RescheduleStatus) => {
+export const updateRescheduleStatus = async (reschedule: Reschedule, status: RescheduleStatus) => {
     try {
-        reschedule.status=status;
+        reschedule.status = status;
         return await reschedule.save();
-        
+
     } catch (error) {
         console.log(error);
-    throw error;        
-        
+        throw error;
+
     }
-    
+
 }

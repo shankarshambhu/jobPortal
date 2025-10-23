@@ -128,9 +128,18 @@ export default function ApplicationCard({
                         <strong>Experience:</strong>{" "}
                         {user?.candidateProfile?.experienceYears || 0} years
                     </Typography>
-                    <Typography variant="body2" sx={{ mb: 2 }}>
+                    <Typography variant="body2" sx={{ mb: 1 }}>
                         <strong>Cover Letter:</strong> {application.coverLetter}
                     </Typography >
+
+                    {application?.interviews
+                        ?.filter((interview: any) => interview.status === 'completed' && interview.notes) // only completed with notes
+                        .map((interview: any) => (
+                            <Typography key={interview.id} variant="body2" sx={{ mt: 2 }}>
+                                <strong>Interview Notes:</strong> {interview.notes}
+                            </Typography>
+                        ))}
+
                     <Typography variant="body2" sx={{ mb: 2 }}>
                         <a
                             href={`${backendURL}${user?.candidateProfile?.resume}`}

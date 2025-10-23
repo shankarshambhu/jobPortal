@@ -140,23 +140,39 @@ const CandidateDashboard = () => {
     ],
   };
 
+  type StatusType = "applied" | "shortlisted" | "hired" | "rejected" | "scheduled";
+
+
+  const statusColorMap = {
+    applied: "#f59e0b",       // Amber
+    shortlisted: "#3b82f6",   // Blue
+    hired: "#10b981",         // Green
+    rejected: "#ef4444",      // Red
+    scheduled: "#8b5cf6",     // Purple
+  };
+
   const pieData = {
     labels: statusData.map((s) => s.status),
     datasets: [
       {
         data: statusData.map((s) => s.count),
-        backgroundColor: [
-          "#f59e0b", // Pending - Amber
-          "#3b82f6", // Shortlisted - Blue
-          "#10b981", // Hired - Green
-          "#ef4444", // Rejected - Red
-          "#8b5cf6", // Interview - Purple
-        ],
+        backgroundColor: statusData.map(
+          (s) => statusColorMap[s.status as StatusType] || "#9ca3af"
+        ),
         borderWidth: 2,
         borderColor: "#ffffff",
       },
     ],
   };
+
+  const totalScheduledInterviews =
+    stats?.application?.reduce((count: number, app: any) => {
+      // Count only interviews whose status is "scheduled"
+      const scheduled = app.interviews?.filter(
+        (i: any) => i.status === "scheduled"
+      ).length || 0;
+      return count + scheduled;
+    }, 0) || 0;
 
   const barData = {
     labels: skillMatch.map((s) => s.skill),
@@ -297,7 +313,7 @@ const CandidateDashboard = () => {
           },
           {
             label: "Interviews Scheduled",
-            value: stats?.interview?.length || 0,
+            value: totalScheduledInterviews || 0,
             icon: <Schedule sx={{ fontSize: 32 }} />,
             color: "#8b5cf6"
           },
@@ -329,7 +345,7 @@ const CandidateDashboard = () => {
                     "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
                 },
                 height: "95%",
-                width:'80%'
+                width: '80%'
               }}
             >
               <CardContent sx={{ p: 3 }}>
@@ -420,7 +436,7 @@ const CandidateDashboard = () => {
               <Typography variant="h6" fontWeight="bold" gutterBottom>
                 Skill Match Insights
               </Typography>
-        <Box sx={{ height: { xs: 180, sm: 200, md: 250 } }}>
+              <Box sx={{ height: { xs: 180, sm: 200, md: 250 } }}>
                 <Bar data={barData} options={barOptions} />
               </Box>
             </CardContent>

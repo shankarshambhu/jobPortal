@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import {
   Box,
@@ -22,7 +21,6 @@ import {
   Visibility,
   VisibilityOff,
   Person,
-
   Security
 } from "@mui/icons-material";
 import { toast } from "react-toastify";
@@ -97,8 +95,24 @@ export default function LoginPage() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: `radial-gradient(circle at 50% 50%, ${alpha(theme.palette.primary.main, 0.1)} 0%, ${theme.palette.background.default} 100%)`,
+        background: `
+          radial-gradient(circle at 20% 20%, ${alpha(theme.palette.primary.main, 0.15)} 0%, transparent 50%),
+          radial-gradient(circle at 80% 80%, ${alpha(theme.palette.secondary.main, 0.1)} 0%, transparent 50%),
+          ${theme.palette.background.default}
+        `,
         py: 2,
+        position: "relative",
+        overflow: "hidden",
+        "&::before": {
+          content: '""',
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.03)} 0%, ${alpha(theme.palette.secondary.main, 0.03)} 100%)`,
+          pointerEvents: "none",
+        }
       }}
     >
       <Container maxWidth="sm">
@@ -109,10 +123,10 @@ export default function LoginPage() {
               p: { xs: 3, sm: 5 },
               width: "100%",
               borderRadius: 4,
-              background: alpha(theme.palette.background.paper, 0.9),
+              background: alpha(theme.palette.background.paper, 0.95),
               backdropFilter: "blur(20px)",
-              border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`,
-              boxShadow: theme.shadows[8],
+              border: `1px solid ${alpha(theme.palette.primary.main, 0.08)}`,
+              boxShadow: `0 25px 50px -12px ${alpha(theme.palette.primary.main, 0.15)}`,
               position: "relative",
               overflow: "hidden",
               "&::before": {
@@ -122,7 +136,7 @@ export default function LoginPage() {
                 left: 0,
                 right: 0,
                 height: "4px",
-                background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.warning.main})`,
+                background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
               }
             }}
           >
@@ -133,19 +147,30 @@ export default function LoginPage() {
                   width: 80,
                   height: 80,
                   borderRadius: "50%",
-                  background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.warning.main})`,
+                  background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   margin: "0 auto 20px",
-                  boxShadow: `0 8px 32px ${alpha(theme.palette.primary.main, 0.3)}`,
-                  border: `2px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+                  boxShadow: `0 12px 40px ${alpha(theme.palette.primary.main, 0.3)}`,
+                  border: `2px solid ${alpha(theme.palette.primary.main, 0.1)}`,
+                  position: "relative",
+                  "&::after": {
+                    content: '""',
+                    position: "absolute",
+                    inset: -4,
+                    borderRadius: "50%",
+                    background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
+                    opacity: 0.2,
+                    zIndex: -1,
+                  }
                 }}
               >
                 <Security
                   sx={{
                     fontSize: 40,
-                    color: theme.palette.primary.contrastText
+                    color: theme.palette.primary.contrastText,
+                    filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.2))"
                   }}
                 />
               </Box>
@@ -154,11 +179,12 @@ export default function LoginPage() {
                 fontWeight="bold"
                 gutterBottom
                 sx={{
-                  background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.warning.light})`,
+                  background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.light})`,
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
                   mb: 1,
+                  fontSize: { xs: "2.5rem", sm: "3rem" },
                 }}
               >
                 Welcome Back
@@ -166,7 +192,10 @@ export default function LoginPage() {
               <Typography
                 variant="body1"
                 color="text.secondary"
-                sx={{ fontSize: '1.1rem' }}
+                sx={{
+                  fontSize: '1.1rem',
+                  opacity: 0.8
+                }}
               >
                 Sign in to access your career dashboard
               </Typography>
@@ -209,7 +238,7 @@ export default function LoginPage() {
                     },
                     "&.Mui-focused fieldset": {
                       borderColor: theme.palette.primary.main,
-                      boxShadow: `0 0 0 2px ${alpha(theme.palette.primary.main, 0.1)}`,
+                      boxShadow: `0 0 0 3px ${alpha(theme.palette.primary.main, 0.1)}`,
                     },
                   },
                 }}
@@ -266,7 +295,7 @@ export default function LoginPage() {
                     },
                     "&.Mui-focused fieldset": {
                       borderColor: theme.palette.primary.main,
-                      boxShadow: `0 0 0 2px ${alpha(theme.palette.primary.main, 0.1)}`,
+                      boxShadow: `0 0 0 3px ${alpha(theme.palette.primary.main, 0.1)}`,
                     },
                   },
                 }}
@@ -285,20 +314,20 @@ export default function LoginPage() {
                   borderRadius: 3,
                   fontSize: "1.1rem",
                   fontWeight: "bold",
-                  background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.warning.main} 100%)`,
-                  boxShadow: theme.shadows[4],
+                  background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
+                  boxShadow: `0 8px 30px ${alpha(theme.palette.primary.main, 0.4)}`,
                   position: "relative",
                   overflow: "hidden",
                   "&:hover": {
                     transform: "translateY(-2px)",
-                    boxShadow: theme.shadows[8],
-                    background: `linear-gradient(135deg, ${theme.palette.primary.dark} 0%, ${theme.palette.warning.dark} 100%)`,
+                    boxShadow: `0 12px 40px ${alpha(theme.palette.primary.main, 0.5)}`,
+                    background: `linear-gradient(135deg, ${theme.palette.primary.dark} 0%, ${theme.palette.secondary.dark} 100%)`,
                   },
                   "&:active": {
                     transform: "translateY(0)",
                   },
                   "&:disabled": {
-                    background: theme.palette.grey[600],
+                    background: theme.palette.grey[400],
                     transform: "none",
                     boxShadow: "none",
                   },
@@ -317,7 +346,7 @@ export default function LoginPage() {
                 sx={{
                   mb: 3,
                   "&::before, &::after": {
-                    borderColor: theme.palette.divider,
+                    borderColor: alpha(theme.palette.divider, 0.3),
                   }
                 }}
               >
@@ -327,13 +356,19 @@ export default function LoginPage() {
                   sx={{
                     px: 2,
                     background: theme.palette.background.paper,
+                    opacity: 0.7,
                   }}
                 >
                   New to our platform?
                 </Typography>
               </Divider>
               <Box textAlign="center">
-                <Typography variant="body2" color="text.secondary" mb={2}>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  mb={2}
+                  sx={{ opacity: 0.8 }}
+                >
                   Start your journey with us
                 </Typography>
                 <Button
@@ -347,15 +382,16 @@ export default function LoginPage() {
                     px: 4,
                     py: 1.5,
                     borderWidth: 2,
-                    borderColor: theme.palette.primary.main,
+                    borderColor: alpha(theme.palette.primary.main, 0.3),
                     color: theme.palette.primary.main,
                     fontWeight: "bold",
+                    background: alpha(theme.palette.primary.main, 0.02),
                     "&:hover": {
                       borderWidth: 2,
-                      borderColor: theme.palette.primary.light,
-                      backgroundColor: alpha(theme.palette.primary.main, 0.1),
-                      transform: "translateY(-1px)",
-                      boxShadow: theme.shadows[4],
+                      borderColor: theme.palette.primary.main,
+                      backgroundColor: alpha(theme.palette.primary.main, 0.08),
+                      transform: "translateY(-2px)",
+                      boxShadow: `0 8px 25px ${alpha(theme.palette.primary.main, 0.15)}`,
                     },
                     transition: theme.transitions.create(['all'], {
                       duration: theme.transitions.duration.standard,

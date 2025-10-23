@@ -37,7 +37,7 @@ export const getAllApplicationServiceCompany = async (userId: number) => {
 
 export const getAllApplicationServiceCandidate = async (userId: number) => {
     try {
-        return await Application.find({ where: { user: { id: userId } }, relations: ['job', 'user', 'job.user', 'user.candidateProfile'] });
+        return await Application.find({ where: { user: { id: userId } }, relations: ['job', 'user', 'job.user', 'user.candidateProfile', 'interviews'] });
 
     } catch (error) {
         console.log(error);
@@ -54,7 +54,7 @@ export const getApplicationsByJobId = async (jobId: number) => {
     try {
         return await Application.find({
             where: { job: { id: jobId } },
-            relations: ["job", "user", "user.candidateProfile"],
+            relations: ["job", "user", "user.candidateProfile", 'interviews'],
             order: { appliedAt: "DESC" },
         });
     } catch (error) {

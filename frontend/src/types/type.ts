@@ -65,4 +65,14 @@ export interface Application {
     appliedAt: string;
     job: Job;
     user: CandidateUser;
+    interviews: Interview[]
+}
+export interface Interview {
+    id: number;
+    scheduledAt: Date;
+    status: string;
+    roomLink?: string;
+    notes?: string;
+    createdAt: Date;
+    updatedAt: Date
 }

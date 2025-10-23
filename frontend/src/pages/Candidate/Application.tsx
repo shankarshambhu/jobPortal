@@ -21,13 +21,14 @@ import {
     Schedule,
     EditCalendar,
     Work,
+    CalendarMonth,
 } from "@mui/icons-material";
 import { toast } from "react-toastify";
 import { interviewReschedule } from "../../services/interview";
 import type { Application } from "../../types/type";
 import GenericModal from "../../components/GenericModal";
 import CustomButton from "../../components/CustomButton";
-import {  getUserApplications } from "../../services/application";
+import { getUserApplications } from "../../services/application";
 
 // Custom Tab Component
 function StyledTab(props: any) {
@@ -346,6 +347,26 @@ export default function ApplicationsPage() {
                                             <Typography variant="body2" color="text.secondary">
                                                 Applied {new Date(app.appliedAt).toLocaleDateString()}
                                             </Typography>
+                                        </Box>
+
+
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+
+                                            <CalendarMonth fontSize="small" color="action" />
+
+                                            {app.interviews?.length ? (
+                                                app.interviews.map((interview) => (
+
+                                                    <Typography key={interview.id} variant="body2" color="text.secondary">
+                                                        Scheduled at: {new Date(interview.scheduledAt).toLocaleString()}
+                                                    </Typography>
+                                                ))
+                                            ) : (
+                                                <Typography>Scheduled at: N/A</Typography>
+                                            )}
+
+
+
                                         </Box>
                                     </Box>
 

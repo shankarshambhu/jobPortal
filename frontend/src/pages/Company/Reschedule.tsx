@@ -1,197 +1,3 @@
-// import { useEffect, useState } from "react";
-// import {
-//     Box,
-//     Typography,
-//     Tabs,
-//     Tab,
-//     Grid,
-//     Card,
-//     CardContent,
-//     Button,
-//     Chip,
-//     CircularProgress,
-// } from "@mui/material";
-// import { toast } from "react-toastify";
-// import { getRescheduleRequests, updateRescheduleStatus } from "../../services/interview";
-
-// function Reschedule() {
-//     const [tab, setTab] = useState(0);
-//     const [requests, setRequests] = useState<any[]>([]);
-//     const [loading, setLoading] = useState(false);
-
-//     const statusTabs = ["pending", "accepted", "rejected"];
-
-//     useEffect(() => {
-//         fetchRequests();
-//     }, []);
-
-//     const fetchRequests = async () => {
-//         try {
-//             setLoading(true);
-//             const res = await getRescheduleRequests(); // should return { reschedule: [...] }
-//             if (res.data.success) {
-//                 setRequests(res.data?.reschedule || []);
-//             }
-//         } catch (err: any) {
-//             toast.error(err.data?.message || "Failed to load reschedule requests");
-//         } finally {
-//             setLoading(false);
-//         }
-//     };
-
-//     const handleStatusUpdate = async (rescheduleId:number,id: number, dateTime: Date, status: string) => {
-//         try {
-//             const res = await updateRescheduleStatus(rescheduleId,id, dateTime, status);
-//             if (res.data.success) {
-//                 toast.success(res.data.message)
-//                 fetchRequests();
-//             }
-
-//         } catch (err: any) {
-//             toast.error(err.data.message || "Failed to update status");
-//         }
-//     };
-
-//     const filteredRequests = requests.filter(
-//         (r) => r.status.toLowerCase() === statusTabs[tab]
-//     );
-
-//     return (
-//         <Box p={3}>
-//             <Typography variant="h5" fontWeight={600} gutterBottom>
-//                 Reschedule Requests
-//             </Typography>
-
-//             <Tabs
-//                 value={tab}
-//                 onChange={(_, newVal) => setTab(newVal)}
-//                 textColor="primary"
-//                 indicatorColor="primary"
-//                 sx={{ mb: 3 }}
-//             >
-//                 <Tab label="Pending" />
-//                 <Tab label="Accepted" />
-//                 <Tab label="Rejected" />
-//             </Tabs>
-
-//             {loading ? (
-//                 <Box textAlign="center" mt={4}>
-//                     <CircularProgress />
-//                 </Box>
-//             ) : filteredRequests.length === 0 ? (
-//                 <Typography color="text.secondary" mt={2}>
-//                     No {statusTabs[tab]} requests
-//                 </Typography>
-//             ) : (
-//                 <Grid container spacing={2}>
-//                     {filteredRequests.map((req) => (
-//                         <Grid size={{ xs: 12, md: 6, lg: 4 }} key={req.id}>
-//                             <Card
-//                                 variant="outlined"
-//                                 sx={{
-//                                     borderRadius: 2,
-//                                     backdropFilter: "blur(6px)",
-//                                     background: "rgba(255,255,255,0.05)",
-//                                     borderColor: "rgba(255,255,255,0.1)",
-//                                 }}
-//                             >
-//                                 <CardContent>
-//                                     {/* Candidate Info */}
-//                                     <Typography variant="subtitle1" fontWeight={600}>
-//                                         {req.candidate?.firstName} {req.candidate?.lastName}
-//                                     </Typography>
-//                                     <Typography variant="body2" color="text.secondary">
-//                                         {req.candidate?.email}
-//                                     </Typography>
-
-//                                     {/* Application Position */}
-//                                     {req.interview?.application?.job?.title && (
-//                                         <Typography variant="body2">
-//                                             <strong>Job Title:</strong> {req.interview.application.job.title}
-//                                         </Typography>
-//                                     )}
-
-//                                     {req.interview?.application?.job?.companyName && (
-//                                         <Typography variant="body2">
-//                                             <strong>Company:</strong> {req.interview.application.job.companyName}
-//                                         </Typography>
-//                                     )}
-
-
-
-
-//                                     {/* Interview Times */}
-//                                     <Box mt={1}>
-//                                         <Typography variant="body2">
-//                                             <strong>Old Interview:</strong>{" "}
-//                                             {req.interview?.scheduledAt
-//                                                 ? new Date(req.interview.scheduledAt).toLocaleString()
-//                                                 : "—"}
-//                                         </Typography>
-//                                         <Typography variant="body2">
-//                                             <strong>Requested New Time:</strong>{" "}
-//                                             {req.newDateTime ? new Date(req.newDateTime).toLocaleString() : "—"}
-//                                         </Typography>
-//                                         {req.reason && (
-//                                             <Typography variant="body2">
-//                                                 <strong>Reason:</strong> {req.reason}
-//                                             </Typography>
-//                                         )}
-//                                     </Box>
-
-//                                     {/* Status Chip */}
-//                                     <Box mt={2}>
-//                                         <Chip
-//                                             label={req.status.toUpperCase()}
-//                                             color={
-//                                                 req.status === "accepted"
-//                                                     ? "success"
-//                                                     : req.status === "rejected"
-//                                                         ? "error"
-//                                                         : "warning"
-//                                             }
-//                                             size="small"
-//                                         />
-//                                     </Box>
-
-//                                     {/* Accept/Reject Buttons */}
-//                                     {req.status === "pending" && (
-//                                         <Box mt={2} display="flex" gap={1}>
-//                                             <Button
-//                                                 variant="contained"
-//                                                 color="success"
-//                                                 fullWidth
-//                                                 onClick={() => handleStatusUpdate(req.id,req.interview.id, req.newDateTime, "accepted")}
-//                                             >
-//                                                 Accept
-//                                             </Button>
-//                                             <Button
-//                                                 variant="outlined"
-//                                                 color="error"
-//                                                 fullWidth
-//                                                 onClick={() => handleStatusUpdate(req.id,req.interview.id, req.interview.scheduledAt, "rejected")}
-//                                             >
-//                                                 Reject
-//                                             </Button>
-//                                         </Box>
-//                                     )}
-//                                 </CardContent>
-//                             </Card>
-//                         </Grid>
-//                     ))}
-//                 </Grid>
-//             )
-//             }
-//         </Box >
-//     );
-// }
-
-// export default Reschedule;
-
-
-
-
-
 import { useEffect, useState } from "react";
 import {
     Box,
@@ -526,13 +332,13 @@ function Reschedule() {
                                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                             <Business fontSize="small" color="action" />
                                             <Typography variant="body2" color="text.secondary">
-                                                {req.interview?.application?.job?.companyName || "N/A"}
+                                                {req.interview?.application?.job?.user?.companyProfile.companyName || "N/A"}
                                             </Typography>
                                         </Box>
                                     </Box>
 
                                     {/* Interview Times */}
-                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 3 }}>
+                                    {/* <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 3 }}>
                                         <Box>
                                             <Typography variant="caption" color="text.secondary" display="block" gutterBottom>
                                                 ORIGINAL SCHEDULE
@@ -556,10 +362,59 @@ function Reschedule() {
                                                 </Typography>
                                             </Box>
                                         </Box>
-                                    </Box>
+                                    </Box> */}
+
+                                    {req.status === "pending" && (
+                                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 3 }}>
+                                            {/* Original Schedule */}
+                                            <Box>
+                                                <Typography variant="caption" color="text.secondary" display="block" gutterBottom>
+                                                    ORIGINAL SCHEDULE
+                                                </Typography>
+                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                    <Event fontSize="small" color="action" />
+                                                    <Typography variant="body2" fontWeight="medium">
+                                                        {formatDateTime(req.interview?.scheduledAt)}
+                                                    </Typography>
+                                                </Box>
+                                            </Box>
+
+                                            {/* Requested Time */}
+                                            <Box>
+                                                <Typography variant="caption" color="text.secondary" display="block" gutterBottom>
+                                                    REQUESTED TIME
+                                                </Typography>
+                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                    <AccessTime fontSize="small" color="action" />
+                                                    <Typography variant="body2" fontWeight="medium" color="primary">
+                                                        {formatDateTime(req.newDateTime)}
+                                                    </Typography>
+                                                </Box>
+                                            </Box>
+                                        </Box>
+                                    )}
+
+                                    {req.status === "accepted" && (
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
+                                            <AccessTime fontSize="small" color="action" />
+                                            <Typography variant="body2" fontWeight="medium" color="primary">
+                                                <strong>Interview On: </strong>
+                                                {formatDateTime(req.newDateTime)}
+                                            </Typography>
+                                        </Box>
+                                    )}
+
+                                    {req.status === "rejected" && (
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
+                                            <Event fontSize="small" color="action" />
+                                            <Typography variant="body2" fontWeight="medium">
+                                                {formatDateTime(req.interview?.scheduledAt)}
+                                            </Typography>
+                                        </Box>
+                                    )}
 
                                     {/* Reason */}
-                                    {req.reason && (
+                                    {req.status === "pending" && req.reason && (
                                         <Box sx={{ mb: 3 }}>
                                             <Typography variant="caption" color="text.secondary" display="block" gutterBottom>
                                                 REASON
