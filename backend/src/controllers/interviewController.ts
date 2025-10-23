@@ -309,7 +309,7 @@ export const finishInterview = async (req: AuthRequest, res: Response, next: Nex
 export const checkRoomAccess = async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
         const { userId, role } = req.user!;
-        const roomId = req.params.id;
+        const roomId = req.params.roomId;
 
         if (role === "company") {
             return res.status(200).json({
