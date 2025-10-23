@@ -319,7 +319,7 @@ export const checkRoomAccess = async (req: AuthRequest, res: Response, next: Nex
         }
 
         const interview = await getInterviewByCandidateId(userId);
-        const frontendurl = process.env.FRONTEND_URL;
+        const frontendurl = process.env.FRONTEND_URL || "https://jobportal-1-vm5o.onrender.com";
         const roomLink = `${frontendurl}/video/room/${roomId}`
 
         if (interview?.roomLink != roomLink) {
