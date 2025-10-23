@@ -204,6 +204,7 @@ export const sendInterviewLink = async (req: AuthRequest, res: Response, next: N
         if (!interview) {
             throw new ApiError("Interview not found", 404);
         }
+
         if (interview.status != 'scheduled') {
             throw new ApiError("Interview over cant send")
         }
