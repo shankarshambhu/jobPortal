@@ -1,19 +1,6 @@
-import nodemailer from "nodemailer";
+import sgMail from "@sendgrid/mail";
 
-// Create transporter using Gmail and environment variables
-export const transporter = nodemailer.createTransport({
-    service: "Gmail",
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS, // app password
-    },
-});
+// Set SendGrid API key from environment variable
+sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
 
-// Verify SMTP connection on startup
-transporter.verify((err, success) => {
-    if (err) {
-        console.error("SMTP connection failed:", err);
-    } else {
-        console.log("SMTP ready to send emails");
-    }
-});
+export default sgMail;
