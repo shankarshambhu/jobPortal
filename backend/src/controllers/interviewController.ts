@@ -243,7 +243,7 @@ export const sendInterviewNotes = async (req: AuthRequest, res: Response, next: 
     try {
         const { roomId, notes } = req.body;
         const interview = await getInterviewByRoomId(roomId);
-        if (!interview) {   
+        if (!interview) {
             throw new ApiError("Interview not found", 404);
         }
         const udpatedInterview = await sendInterviewNotesService(interview, notes);
@@ -319,9 +319,10 @@ export const checkRoomAccess = async (req: AuthRequest, res: Response, next: Nex
         }
 
         const interview = await getInterviewByCandidateId(userId);
-        const storedRoomId = interview?.roomLink?.split("/").pop();
+        const frontendurl = process.env.FRONTEND_URL || "https://jobportal-1-vm5o.onrender.com";
+        const roomLink = `${frontendurl}/video/room/${roomId}`
 
-        if (storedRoomId !== roomId) {
+        if (interview?.roomLink != roomLink) {
             throw new ApiError("You don't have access to this room", 404);
         }
 
