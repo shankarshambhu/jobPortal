@@ -209,8 +209,9 @@ export const sendInterviewLink = async (req: AuthRequest, res: Response, next: N
         }
 
         // 1️⃣ Generate unique room ID
+        const frontendurl = process.env.FRONTEND_URL;
         const roomId = crypto.randomBytes(6).toString("hex");
-        const link = `http://localhost:5173/video/room/${roomId}`;
+        const link = `${frontendurl}/video/room/${roomId}`;
 
         // 2️⃣ Send the WebRTC room link via email
         await sendRoomLink({
