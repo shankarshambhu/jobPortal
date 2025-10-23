@@ -1,8 +1,3 @@
-
-
-
-
-
 // import { useEffect, useRef, useState } from "react";
 // import { useParams } from "react-router-dom";
 // import { useAuth } from "../../context/AuthContext";
@@ -113,82 +108,93 @@
 //     useEffect(() => {
 //         if (!roomId) return;
 
-//         const pc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
-//         pcRef.current = pc;
+//         let pc: RTCPeerConnection;
+//         let ws: WebSocket;
 
-//         // When remote track arrives
-//         pc.ontrack = (event) => {
-//             if (remoteVideoRef.current) {
-//                 remoteVideoRef.current.srcObject = event.streams[0];
-//                 remoteVideoRef.current.play().catch(() => { });
-//             }
-//         };
+//         const init = async () => {
+//             pc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
+//             pcRef.current = pc;
 
-//         // Get local stream
-//         navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-//             .then((stream) => {
+//             // Handle remote track
+//             pc.ontrack = (event) => {
+//                 if (remoteVideoRef.current) {
+//                     remoteVideoRef.current.srcObject = event.streams[0];
+//                     remoteVideoRef.current.play().catch(() => { });
+//                 }
+//             };
+
+//             // Get local media
+//             try {
+//                 const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
 //                 localStreamRef.current = stream;
 //                 if (localVideoRef.current) {
 //                     localVideoRef.current.srcObject = stream;
 //                     localVideoRef.current.play().catch(() => { });
 //                 }
 //                 stream.getTracks().forEach(track => pc.addTrack(track, stream));
-//             })
-//             .catch(err => { console.error(err); toast.error("Failed to access camera or mic"); });
+//             } catch (err) {
+//                 console.error(err);
+//                 toast.error("Failed to access camera or microphone");
+//                 return;
+//             }
 
-//         // WebSocket connection
-//         const backendURL = import.meta.env.VITE_BASE_URL;
-//         const wsProtocol = backendURL.startsWith("https://") ? "wss://" : "ws://";
-//         const wsHost = backendURL.replace(/^https?:\/\//, "");
-//         const ws = new WebSocket(`${wsProtocol}${wsHost}/video/room/${roomId}`);
-//         wsRef.current = ws;
-//         const messageQueue: any[] = [];
+//             // Setup WebSocket
+//             const backendURL = import.meta.env.VITE_BASE_URL;
+//             const wsProtocol = backendURL.startsWith("https://") ? "wss://" : "ws://";
+//             const wsHost = backendURL.replace(/^https?:\/\//, "");
+//             ws = new WebSocket(`${wsProtocol}${wsHost}/video/room/${roomId}`);
+//             wsRef.current = ws;
 
-//         const sendMessage = (msg: any) => {
-//             if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(msg));
-//             else messageQueue.push(msg);
-//         };
+//             const messageQueue: any[] = [];
+//             const sendMessage = (msg: any) => {
+//                 if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(msg));
+//                 else messageQueue.push(msg);
+//             };
 
-//         ws.onopen = () => {
-//             setConnected(true);
-//             messageQueue.forEach(msg => ws.send(JSON.stringify(msg)));
-//             messageQueue.length = 0;
-//         };
+//             ws.onopen = () => {
+//                 setConnected(true);
+//                 messageQueue.forEach(msg => ws.send(JSON.stringify(msg)));
+//                 messageQueue.length = 0;
+//             };
 
-//         ws.onmessage = async (msg) => {
-//             const data = JSON.parse(msg.data);
-//             if (data.sdp) {
-//                 await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
-//                 if (data.sdp.type === "offer") {
-//                     const answer = await pc.createAnswer();
-//                     await pc.setLocalDescription(answer);
-//                     sendMessage({ sdp: answer });
+//             ws.onmessage = async (msg) => {
+//                 const data = JSON.parse(msg.data);
+//                 if (data.sdp) {
+//                     await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
+//                     if (data.sdp.type === "offer") {
+//                         const answer = await pc.createAnswer();
+//                         await pc.setLocalDescription(answer);
+//                         sendMessage({ sdp: answer });
+//                     }
 //                 }
-//             }
-//             if (data.candidate) {
-//                 try { await pc.addIceCandidate(new RTCIceCandidate(data.candidate)); }
-//                 catch (e) { console.error(e); }
-//             }
+//                 if (data.candidate) {
+//                     try { await pc.addIceCandidate(new RTCIceCandidate(data.candidate)); }
+//                     catch (e) { console.error(e); }
+//                 }
+//             };
+
+//             pc.onicecandidate = (event) => {
+//                 if (event.candidate) sendMessage({ candidate: event.candidate });
+//             };
+
+//             // Trigger negotiation when needed
+//             pc.onnegotiationneeded = async () => {
+//                 try {
+//                     const offer = await pc.createOffer();
+//                     await pc.setLocalDescription(offer);
+//                     sendMessage({ sdp: offer });
+//                 } catch (err) {
+//                     console.error(err);
+//                 }
+//             };
 //         };
 
-//         pc.onicecandidate = (event) => {
-//             if (event.candidate) sendMessage({ candidate: event.candidate });
-//         };
-
-//         // Create offer if second peer connects
-//         const offerInterval = setInterval(async () => {
-//             if (ws.readyState === WebSocket.OPEN && !pc.remoteDescription) {
-//                 const offer = await pc.createOffer();
-//                 await pc.setLocalDescription(offer);
-//                 sendMessage({ sdp: offer });
-//                 clearInterval(offerInterval);
-//             }
-//         }, 500);
+//         init();
 
 //         return () => {
-//             clearInterval(offerInterval);
-//             pc.close();
-//             ws.close();
+//             if (pc) pc.close();
+//             if (ws) ws.close();
+//             if (localStreamRef.current) localStreamRef.current.getTracks().forEach(t => t.stop());
 //         };
 //     }, [roomId]);
 
@@ -220,7 +226,7 @@
 //                 <Card sx={{ flex: 1, borderRadius: 3, overflow: "hidden" }}>
 //                     <CardContent sx={{ p: 0, position: "relative" }}>
 //                         <Typography variant="h6" sx={{ position: "absolute", top: 16, left: 16, background: alpha(theme.palette.background.paper, 0.8), px: 2, py: 1, borderRadius: 2, zIndex: 1, display: "flex", alignItems: "center" }}><Person sx={{ mr: 1 }} /> You</Typography>
-//                         <video ref={localVideoRef} autoPlay muted style={{ width: "100%", height: 300, objectFit: "cover" }} />
+//                         <video ref={localVideoRef} autoPlay muted playsInline style={{ width: "100%", height: 300, objectFit: "cover" }} />
 //                     </CardContent>
 //                 </Card>
 //                 <Card sx={{ flex: 1, borderRadius: 3, overflow: "hidden" }}>
@@ -269,10 +275,6 @@
 // };
 
 // export default VideoRoomPage;
-
-
-
-
 
 
 import { useEffect, useRef, useState } from "react";
@@ -396,6 +398,7 @@ const VideoRoomPage = () => {
             pc.ontrack = (event) => {
                 if (remoteVideoRef.current) {
                     remoteVideoRef.current.srcObject = event.streams[0];
+                    remoteVideoRef.current.muted = false;
                     remoteVideoRef.current.play().catch(() => { });
                 }
             };
@@ -406,7 +409,8 @@ const VideoRoomPage = () => {
                 localStreamRef.current = stream;
                 if (localVideoRef.current) {
                     localVideoRef.current.srcObject = stream;
-                    localVideoRef.current.play().catch(() => { });
+                    localVideoRef.current.muted = true; // mute self
+                    localVideoRef.current.play();
                 }
                 stream.getTracks().forEach(track => pc.addTrack(track, stream));
             } catch (err) {
@@ -454,7 +458,6 @@ const VideoRoomPage = () => {
                 if (event.candidate) sendMessage({ candidate: event.candidate });
             };
 
-            // Trigger negotiation when needed
             pc.onnegotiationneeded = async () => {
                 try {
                     const offer = await pc.createOffer();
