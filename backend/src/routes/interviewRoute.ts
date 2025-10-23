@@ -24,6 +24,6 @@ router.route("/todayinterviewcandidate").get(getTodayInterviewCandidate);
 
 router.route("/interviewstatus/:id").post(finishInterview);
 
-router.route("/checkroomaccess").get(checkRoomAccess)
+router.route("/checkroomaccess/:roomId").get(checkRoomAccess)
 
 export default router;
