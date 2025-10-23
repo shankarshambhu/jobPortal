@@ -4,7 +4,7 @@ import { Interview, InterviewStatus } from "../entity/interview";
 import { Job } from "../entity/job";
 import { Reschedule } from "../entity/reshedule";
 import { User } from "../entity/user";
-import { Between } from "typeorm";
+import { Between, Not } from "typeorm";
 import { stat } from "fs";
 
 export const interviewCreateService = async (application: Application, interviewer: User, scheduledAt: any) => {
@@ -72,6 +72,7 @@ export const getTodaysInterviewByCompanyId = async (userId: number) => {
             where: {
                 interviewer: { id: userId },
                 scheduledAt: Between(startOfDay, endOfDay),
+                status: Not(InterviewStatus.COMPLETED),
             },
             relations: ["application", "application.user", "application.job"], // optional, if you want related data
         });
@@ -95,6 +96,7 @@ export const getTodaysInterviewByCandidateId = async (userId: number) => {
             where: {
                 application: { user: { id: userId } },
                 scheduledAt: Between(startOfDay, endOfDay),
+
             },
             relations: ["application", "application.user", "application.job", "interviewer.companyProfile"],
         });

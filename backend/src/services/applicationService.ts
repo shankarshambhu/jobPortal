@@ -22,17 +22,8 @@ export const createApplicationService = async (payload: any, user: User, job: Jo
 
 export const getAllApplicationServiceCompany = async (userId: number) => {
     try {
-        return await Application.find({
-            where: { job: { user: { id: userId } } },
-            relations: [
-                'job',
-                'job.user',
-                'job.user.companyProfile',
-                'user',
-                'user.candidateProfile',
-                'interviews'
-            ]
-        });
+        return await Application.find({ where: { job: { user: { id: userId } } }, relations: ['job', 'user', 'job.user', 'user.candidateProfile', 'job.user.companyProfile'] });
+
     } catch (error) {
         console.log(error);
 
