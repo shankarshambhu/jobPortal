@@ -30,6 +30,7 @@ import {
 import { finishInterview, sendInterviewNotes } from "../../services/interview"; // ✅ NEW
 import { toast } from "react-toastify";
 
+
 const VideoRoomPage = () => {
     const { roomId } = useParams<{ roomId: string }>();
     const localVideoRef = useRef<HTMLVideoElement>(null);
@@ -154,8 +155,9 @@ const VideoRoomPage = () => {
                 console.error("Error accessing media devices:", error);
                 toast.error("Failed to access camera or microphone");
             });
+        const backendURL = import.meta.env.VITE_BASE_URL;
 
-        const ws = new WebSocket(`ws://localhost:5000/video/room/${roomId}`);
+        const ws = new WebSocket(`ws://${backendURL}/video/room/${roomId}`);
         ws.binaryType = "arraybuffer";
         wsRef.current = ws;
 

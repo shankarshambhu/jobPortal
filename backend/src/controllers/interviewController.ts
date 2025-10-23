@@ -325,7 +325,6 @@ export const checkRoomAccess = async (req: AuthRequest, res: Response, next: Nex
             throw new ApiError("You don't have access to this room", 403);
         }
 
-
         res.status(200).json({
             success: true,
             message: "You have access",
