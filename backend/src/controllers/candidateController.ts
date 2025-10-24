@@ -1,40 +1,14 @@
-import { NextFunction, Response } from "express";
+import { NextFunction, raw, Response } from "express";
 import { AuthRequest } from "../middlewares/auth.middleware";
 import { CandidateProfile } from "../entity/candidateProfile";
 import { ApiError } from "../utils/apiError";
 import { candidateProfileService, editCandidateProfile } from "../services/profileService";
 import { getAllCandidate, getCandidateDetailById, getCandidateProfileById } from "../services/candidateService";
 import { editUser, getUserById } from "../services/userService";
-import { firstName } from "../validation/commonFields";
 import { getAllApplicationServiceCandidate } from "../services/applicationService";
-import { getInterviewByApplicationId, getInterviewByCandidateId } from "../services/interviewService";
-
-// export const createProfile = async (req: AuthRequest, res: Response, next: NextFunction) => {
-//     try {
-//         const { userId } = req.user!;
-//         const found = await getCandidateProfileById(userId);
-//         if (found) {
-//             throw new ApiError("Profile already exists", 409);
-//         }
-//         const user = await getUserById(userId);
-//         if (!user) {
-//             throw new ApiError("User not found", 404)
-//         }
-//         const profile = await candidateProfileService(req.body, user);
-//         res.status(200).json({
-//             success: true,
-//             message: "profile created successfully",
-//             profile
-//         })
-
-
-//     } catch (error) {
-//         next(error);
-
-
-//     }
-
-// }
+import { getInterviewByCandidateId } from "../services/interviewService";
+import cloudinary from "../cloudinary/config";
+import fs from 'fs'
 
 
 
@@ -53,7 +27,16 @@ export const createProfile = async (req: AuthRequest, res: Response, next: NextF
 
         // If a file was uploaded, overwrite resume in body
         if (req.file) {
-            req.body.resume = `/uploads/resumes/${req.file.filename}`;
+            const result = await cloudinary.uploader.upload(req.file.path, {
+                folder: "jobportal/resumes",
+                resource_type: "image", // now treated as an image
+                format: "png",
+            })
+            fs.unlinkSync(req.file.path);
+
+            req.body.resume = result.secure_url;
+
+
         }
 
         const profile = await candidateProfileService(req.body, user);
@@ -73,41 +56,6 @@ export const createProfile = async (req: AuthRequest, res: Response, next: NextF
 
 
 
-// export const editProfile = async (req: AuthRequest, res: Response, next: NextFunction) => {
-//     try {
-//         const { userId } = req.user!;
-//         const { firstName, lastName, age, address, skills, experienceYears, resume, gender, date_of_birth, phone_number } = req.body;
-//         const userProfile = {
-//             firstName,
-//             lastName
-//         }
-//         const candidateProfile = {
-//             age, address, skills, experienceYears, resume, gender, date_of_birth, phone_number
-//         }
-//         const candidate = await getCandidateProfileById(userId);
-//         const user = await getUserById(userId);
-//         if (!user) {
-//             throw new ApiError("User not found", 404);
-//         }
-//         if (!candidate) {
-//             throw new ApiError("Proflie not made", 404);
-//         }
-//         await editUser(userProfile, user)
-//         const updatedProfile = await editCandidateProfile(candidate, candidateProfile);
-//         res.status(200).json({
-//             success: true,
-//             message: "Profile updated successfully",
-//             profile: updatedProfile
-//         });
-
-//     } catch (error) {
-//         next(error);
-
-//     }
-
-// }
-
-
 
 export const editProfile = async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
@@ -125,9 +73,14 @@ export const editProfile = async (req: AuthRequest, res: Response, next: NextFun
             phone_number
         };
 
-        // If a file is uploaded, save its path
         if (req.file) {
-            candidateProfile.resume = `/uploads/resumes/${req.file.filename}`;
+            const result = await cloudinary.uploader.upload(req.file.path, {
+                resource_type: "image", // now treated as an image
+                format: "png",
+            })
+            fs.unlinkSync(req.file.path);
+            candidateProfile.resume = result.secure_url;
+
         }
 
         const candidate = await getCandidateProfileById(userId);

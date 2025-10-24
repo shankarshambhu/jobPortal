@@ -76,7 +76,6 @@ function CandidateProfilePage() {
     useEffect(() => {
         fetchProfile();
     }, [user]);
-    const backendURL = import.meta.env.VITE_UPLOAD_URL ;
 
 
     const handleEditChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -639,7 +638,7 @@ function CandidateProfilePage() {
                                                 </Typography>
                                                 <Typography variant="body1" fontWeight="medium">
                                                     <a
-                                                        href={`${backendURL}${profile.resume}`}
+                                                        href={profile.resume}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
                                                         style={{ color: theme.palette.primary.main, textDecoration: 'none' }}

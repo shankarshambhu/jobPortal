@@ -1,4 +1,3 @@
-
 import {
     Card,
     CardContent,
@@ -36,7 +35,6 @@ export default function ApplicationCard({
         application.scheduledInterview || null
     );
     const user = application.user;
-    const backendURL = import.meta.env.VITE_UPLOAD_URL;
 
 
     const [sendingLink, setSendingLink] = useState(false);
@@ -55,7 +53,7 @@ export default function ApplicationCard({
             default:
                 return [];
         }
-    }, [status]);
+    }, [status]);   
 
     const handleChange = async (e: any) => {
         const newStatus = e.target.value;
@@ -142,7 +140,7 @@ export default function ApplicationCard({
 
                     <Typography variant="body2" sx={{ mb: 2 }}>
                         <a
-                            href={`${backendURL}${user?.candidateProfile?.resume}`}
+                            href={user?.candidateProfile?.resume}
                             target="_blank"
                             rel="noopener noreferrer"
                             style={{
