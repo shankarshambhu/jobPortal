@@ -131,15 +131,15 @@ function CandidateProfilePage() {
 
     const handleSave = async () => {
         if (!validateForm(editData)) return;
+
         setLoading(true)
 
         try {
             const formData = new FormData();
 
             Object.entries(editData).forEach(([key, value]) => {
-                if (key === "resume") return; // handle resume separately
+                if (key === "resume") return; 
 
-                // Handle skills array properly
                 if (key === "skills" && Array.isArray(value)) {
                     value.forEach(skill => formData.append("skills[]", skill));
                 } else if (value !== undefined && value !== null) {
@@ -288,33 +288,6 @@ function CandidateProfilePage() {
                 />
             </Grid>
 
-            {/* <Grid size={{ xs: 12, sm: 6 }}>
-                <TextField
-                    label="Resume URL"
-                    name="resume"
-                    value={editData.resume || ""}
-                    onChange={handleEditChange}
-                    fullWidth
-                    variant="outlined"
-                />
-            </Grid> */}
-
-
-            {/* <Grid size={{ xs: 12 }}>
-                <Typography variant="subtitle2" gutterBottom>Upload Resume (PDF)</Typography>
-                <input
-                    type="file"
-                    accept=".pdf"
-                    onChange={handleFileChange}
-                    style={{ display: "block", marginBottom: 8 }}
-                />
-                {editData.resume && (
-                    <Typography variant="body2" color="text.secondary">
-                        Selected File: {editData.resume}
-                    </Typography>
-                )}
-                {errors.resume && <Typography variant="caption" color="error">{errors.resume}</Typography>}
-            </Grid> */}
 
 
             <Grid size={{ xs: 12 }}>

@@ -11,11 +11,6 @@ export const updateCandidateProfile = async (edit: any) => {
 
 }
 
-// export const createCandidateProfile = async (edit: any) => {
-//     return await commonAPI("POST", `${baseURL}/candidate/createprofile`, edit)
-
-// }
-
 
 export const createCandidateProfile = async (formData: FormData) => {
     return await commonAPI("POST", `${baseURL}/candidate/createprofile`, formData);
