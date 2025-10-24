@@ -2,7 +2,7 @@ import React from "react";
 import { Button, type ButtonProps } from "@mui/material";
 
 interface CustomButtonProps extends ButtonProps {
-    label: string;
+    label: any;
 }
 
 const CustomButton: React.FC<CustomButtonProps> = ({ label, ...props }) => {

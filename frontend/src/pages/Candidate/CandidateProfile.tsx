@@ -16,6 +16,7 @@ import {
     alpha,
     useTheme,
     Divider,
+    CircularProgress,
 } from "@mui/material";
 import {
     Edit,
@@ -43,6 +44,7 @@ function CandidateProfilePage() {
     const { user } = useAuth();
     const theme = useTheme();
     const [resumeFile, setResumeFile] = useState<File | null>(null);
+    const [loading, setLoading] = useState(false)
 
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -129,6 +131,7 @@ function CandidateProfilePage() {
 
     const handleSave = async () => {
         if (!validateForm(editData)) return;
+        setLoading(true)
 
         try {
             const formData = new FormData();
@@ -158,6 +161,7 @@ function CandidateProfilePage() {
             if (res.data.success) {
                 toast.success(profile ? "Profile updated successfully!" : "Profile created successfully!");
                 fetchProfile();
+                setLoading(false)
                 setOpenModal(false);
                 setResumeFile(null);
             }
@@ -671,7 +675,7 @@ function CandidateProfilePage() {
                             onClick={() => setOpenModal(false)}
                         />
                         <CustomButton
-                            label="Save Profile"
+                            label={loading ? <CircularProgress size={24} color="inherit" /> : "SAVE PROFILE"}
                             color="primary"
                             onClick={handleSave}
                             sx={{
