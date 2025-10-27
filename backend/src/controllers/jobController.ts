@@ -13,6 +13,7 @@ export const jobCreate = async (req: AuthRequest, res: Response, next: NextFunct
         if (!company) {
             throw new ApiError("No company found", 404);
         }
+        
 
         const job = await createJobService(req.body, company);
         if (!job) {

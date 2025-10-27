@@ -1,9 +1,8 @@
 import { Connection } from './database/connectDb';
 import app from './app';
-import dotnenv from "dotenv"
 import { createServer } from 'http';
 import { setupSignalingServer } from './WebRTC/signaling';
-dotnenv.config()
+import 'dotenv/config'
 const PORT = process.env.PORT || 5000;
 const server = createServer(app);
 setupSignalingServer(server);

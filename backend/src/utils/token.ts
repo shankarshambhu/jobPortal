@@ -11,6 +11,7 @@ export const generateToken = async (payload: Object) => {
         return jwt.sign(payload, secretKey, { expiresIn: '2d' })
 
     } catch (error) {
+        throw error;
 
     }
 

@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import {
   Box,
@@ -63,10 +62,13 @@ export default function JobsPage() {
   // ✅ Handle job creation
   const handleSave = async () => {
     try {
+      setLoading(true)
       const payload = { ...form, salary: Number(form.salary) };
       const res = await createJobs(payload);
+
       if (res.data.success) {
         toast.success("Job created successfully!");
+        setLoading(false)
         setOpenModal(false);
         setJobs((prev) => [...prev, res.data.job]);
         setForm({
@@ -82,6 +84,7 @@ export default function JobsPage() {
     } catch (err: any) {
       const message = err?.data?.message || "Error creating job";
       toast.error(message);
+      setLoading(false)
     }
   };
 
@@ -392,7 +395,7 @@ export default function JobsPage() {
               onClick={() => setOpenModal(false)}
             />
             <CustomButton
-              label="Create Job"
+              label={loading ? <CircularProgress size={24} color="inherit" /> : "CREATE JOB"}
               color="primary"
               onClick={handleSave}
               sx={{
