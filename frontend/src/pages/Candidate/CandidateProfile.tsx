@@ -132,13 +132,12 @@ function CandidateProfilePage() {
     const handleSave = async () => {
         if (!validateForm(editData)) return;
 
-        setLoading(true)
 
         try {
             const formData = new FormData();
 
             Object.entries(editData).forEach(([key, value]) => {
-                if (key === "resume") return; 
+                if (key === "resume") return;
 
                 if (key === "skills" && Array.isArray(value)) {
                     value.forEach(skill => formData.append("skills[]", skill));
@@ -157,6 +156,7 @@ function CandidateProfilePage() {
             } else {
                 res = await createCandidateProfile(formData);
             }
+            setLoading(true)
 
             if (res.data.success) {
                 toast.success(profile ? "Profile updated successfully!" : "Profile created successfully!");
