@@ -168,6 +168,7 @@ function CandidateProfilePage() {
         } catch (error: any) {
             console.error(error);
             toast.error(error?.data?.message || "Operation failed!");
+            setLoading(false);
         }
     };
 
