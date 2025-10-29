@@ -7,8 +7,11 @@ const router=express.Router();
 router.use(authenticate);
 
 router.route("/createapplication/:id").post(createApplication);
+
 router.route("/getallapp").get(getAllApplicationCompany);
+
 router.route("/getcanapp").get(getCandidateApplication);
+
 router.route("/getjobapp/:id").get(getCandidateJobApplication);
 
 router.route("/updatestatus/:id").put(updateApplicationStatus);
