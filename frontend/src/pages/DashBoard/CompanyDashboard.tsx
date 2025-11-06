@@ -15,7 +15,7 @@ import {
   TrendingUp,
   CheckCircle,
 } from "@mui/icons-material";
-import { getAllJobs } from "../../services/job";
+import {  getIndividualJobs } from "../../services/job";
 import { getAllApplications } from "../../services/application";
 import {
   ResponsiveContainer,
@@ -56,7 +56,7 @@ function CompanyDashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const jobsRes = await getAllJobs();
+        const jobsRes = await getIndividualJobs();
         if (jobsRes.data.success) setJobs(jobsRes.data.jobs);
 
         const appsRes = await getAllApplications();
