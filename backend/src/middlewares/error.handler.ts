@@ -8,7 +8,7 @@ export const errorHandler = (err: any, req: Request, res: Response, next: NextFu
         return next(err)
     }
 
-    const statusCode = err.statusCode || 500
+        const statusCode = err.statusCode || 500
 
     const message = err.message || "Internal Server Error"
 

@@ -15,3 +15,7 @@ export const getSkillsMatch=async () => {
     return commonAPI("GET",`${baseURL}/job/skillsmatch`);
     
 }
+
+export const getIndividualJobs=async () => {
+    return commonAPI("GET",`${baseURL}/job/getprivatejob`)    
+}

@@ -63,6 +63,21 @@ export const getAllJobs = async () => {
 
 }
 
+export const getJobByCompanyId = async (companyId: number) => {
+    try {
+        return await Job.find({
+            where: {
+                user: {
+                    id: companyId
+                }
+            }
+        })
 
+    } catch (error) {
+        throw error
+
+    }
+
+}
 
 

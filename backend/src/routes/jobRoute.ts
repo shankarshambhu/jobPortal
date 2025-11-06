@@ -3,7 +3,7 @@ import { authenticate, authorize } from '../middlewares/auth.middleware';
 import { Role } from '../entity/user';
 import { validateBody } from '../middlewares/body.validator.middleware';
 import { jobCreationSchema } from '../validation/job.validation';
-import { getAllJob, getJob, jobCreate, jobEdit, skillsMatch } from '../controllers/jobController';
+import { getAllJob, getCompanyJob, getJob, jobCreate, jobEdit, skillsMatch } from '../controllers/jobController';
 const router = express.Router();
 router.use(authenticate);
 
@@ -11,6 +11,7 @@ router.route("/createjob").post(authorize(Role.ADMIN, Role.COMPANY), validateBod
 router.route("/editjob").put(authorize(Role.ADMIN, Role.COMPANY), validateBody(jobCreationSchema), jobEdit);
 router.route("/getalljob").get(getAllJob);
 router.route("/getjob/:id").get(getJob);
+router.route("/getprivatejob").get(getCompanyJob)
 
 router.route("/skillsmatch").get(skillsMatch);
 

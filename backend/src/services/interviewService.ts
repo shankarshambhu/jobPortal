@@ -109,7 +109,7 @@ export const getTodaysInterviewByCandidateId = async (userId: number) => {
 export const interviewLinkSave = async (interview: Interview, link: string) => {
     try {
         interview.roomLink = link;
-        await interview.save();  //
+        await interview.save();  
         return interview;
     } catch (error) {
         console.error("Failed to save interview link:", error);

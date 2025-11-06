@@ -21,7 +21,7 @@ import EventIcon from "@mui/icons-material/Event";
 import GenericModal from "../../components/GenericModal";
 import CustomButton from "../../components/CustomButton";
 import { toast } from "react-toastify";
-import { createJobs, getAllJobs } from "../../services/job";
+import { createJobs, getIndividualJobs } from "../../services/job";
 import { useNavigate } from "react-router-dom";
 
 export default function JobsPage() {
@@ -44,7 +44,7 @@ export default function JobsPage() {
   // ✅ Fetch all jobs
   const fetchJobs = async () => {
     try {
-      const res = await getAllJobs();
+      const res = await getIndividualJobs();
       if (res.data.success) {
         setJobs(res.data.jobs);
       }

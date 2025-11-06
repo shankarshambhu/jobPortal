@@ -2,7 +2,7 @@ import Joi from "joi";
 import { Role } from "../entity/user";
 
 // Email validation
-export const email = Joi.string()
+export const   email = Joi.string()
     .email({ tlds: { allow: true } }) // ensures proper email format
     .required()
     .messages({

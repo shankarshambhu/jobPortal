@@ -2,7 +2,7 @@ import { NextFunction, Response } from "express";
 import { AuthRequest, } from "../middlewares/auth.middleware";
 import { getCompanyUser } from "../services/companyService";
 import { ApiError } from "../utils/apiError";
-import { createJobService, editJobService, getAllJobs, getJobById } from "../services/jobService";
+import { createJobService, editJobService, getAllJobs, getJobByCompanyId, getJobById } from "../services/jobService";
 import { getUserById } from "../services/userService";
 import { Application } from "../entity/application";
 
@@ -13,7 +13,7 @@ export const jobCreate = async (req: AuthRequest, res: Response, next: NextFunct
         if (!company) {
             throw new ApiError("No company found", 404);
         }
-        
+
 
         const job = await createJobService(req.body, company);
         if (!job) {
@@ -171,3 +171,23 @@ export const skillsMatch = async (req: AuthRequest, res: Response, next: NextFun
         next(error);
     }
 };
+
+
+export const getCompanyJob = async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+        const { userId } = req.user!;
+        const jobs = await getJobByCompanyId(userId);
+        if (!jobs) {
+            throw new ApiError("no jobs found for this company", 404)
+        }
+        res.status(200).json({
+            success: true,
+            message: "Job fetched successfully",
+            jobs
+        })
+    } catch (error) {
+        next(error)
+
+    }
+
+}
