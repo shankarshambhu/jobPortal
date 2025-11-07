@@ -332,7 +332,7 @@ function Reschedule() {
                                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                             <Business fontSize="small" color="action" />
                                             <Typography variant="body2" color="text.secondary">
-                                                {req.interview?.application?.job?.user?.companyProfile.companyName || "N/A"}
+                                                {req.interview?.application?.job?.user?.companyProfile?.companyName || "N/A"}
                                             </Typography>
                                         </Box>
                                     </Box>
