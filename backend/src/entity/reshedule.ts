@@ -46,7 +46,7 @@ export class Reschedule extends BaseEntity {
     status: RescheduleStatus;
 
     @CreateDateColumn()
-    createdAt: Date;
+    createdAt: Date;    
 
     @UpdateDateColumn()
     updatedAt: Date;

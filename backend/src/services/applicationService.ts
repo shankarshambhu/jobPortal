@@ -37,7 +37,7 @@ export const getAllApplicationServiceCompany = async (userId: number) => {
 
 export const getAllApplicationServiceCandidate = async (userId: number) => {
     try {
-        return await Application.find({ where: { user: { id: userId } }, relations: ['job', 'user', 'job.user', 'user.candidateProfile', 'interviews'] });
+        return await Application.find({ where: { user: { id: userId } }, relations: ['job', 'user', 'job.user', 'user.candidateProfile', 'interviews.reschedule'] });
 
     } catch (error) {
         console.log(error);

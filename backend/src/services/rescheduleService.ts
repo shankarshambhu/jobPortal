@@ -12,7 +12,7 @@ export const getRescheduleByUserId = async (userId: number) => {
                     application: {
                         job: {
                             user: {
-                                companyProfile: true, // just include the relation
+                                companyProfile: true, // just include  
                             }
 
                         } // include job details
