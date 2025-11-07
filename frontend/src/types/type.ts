@@ -58,15 +58,15 @@ export interface CandidateUser {
 }
 
 // **Single Application type**
-export interface Application {
-    id: number;
-    status: string;
-    coverLetter: string;
-    appliedAt: string;
-    job: Job;
-    user: CandidateUser;
-    interviews: Interview[]
-}
+// export interface Application {
+//     id: number;
+//     status: string;
+//     coverLetter: string;
+//     appliedAt: string;
+//     job: Job;
+//     user: CandidateUser;
+//     interviews: Interview[]
+// }
 export interface Interview {
     id: number;
     scheduledAt: Date;
