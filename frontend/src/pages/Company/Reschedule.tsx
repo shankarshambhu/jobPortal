@@ -199,7 +199,7 @@ function Reschedule() {
                             }
                         }}
                     >
-                        {tabConfig.map((tabItem, index) => (
+                        {tabConfig?.map((tabItem, index) => (
                             <StyledTab
                                 key={tabItem.value}
                                 value={index}
@@ -247,7 +247,7 @@ function Reschedule() {
                         </Typography>
                     </Box>
                 </Box>
-            ) : filteredRequests.length === 0 ? (
+            ) : filteredRequests?.length === 0 ? (
                 <Card sx={{
                     textAlign: 'center',
                     py: 8,
@@ -270,7 +270,7 @@ function Reschedule() {
                 </Card>
             ) : (
                 <Grid container spacing={3}>
-                    {filteredRequests.map((req) => (
+                    {filteredRequests?.map((req) => (
                         <Grid size={{ xs: 12, md: 6, lg: 4 }} key={req.id}>
                             <Card sx={{
                                 borderRadius: 3,
